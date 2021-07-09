@@ -25,4 +25,6 @@ public class EmployeeEntity {
     private String mobile;
     @Column
     private String email;
+    @Column
+    private String designation;
 }

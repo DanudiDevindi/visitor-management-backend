@@ -2,8 +2,10 @@ package com.swehg.visitormanagement.controller;
 
 import com.swehg.visitormanagement.dto.request.CheckInRequestDTO;
 import com.swehg.visitormanagement.dto.response.CommonResponseDTO;
+import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
 import com.swehg.visitormanagement.service.VisitService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,12 @@ public class CheckInController {
     public ResponseEntity checkOut(@RequestParam("id") long visitId) {
         visitService.checkOut(visitId);
         return new ResponseEntity(new CommonResponseDTO(true, "Visitor checked out successfully", null), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/checked", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity checkOut(@RequestParam("index") int index, @RequestParam("size") int size) {
+        Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getAllNotCheckOut(index, size);
+        return new ResponseEntity(new CommonResponseDTO(true, "Checked in records found successfully", allNotCheckOut), HttpStatus.OK);
     }
 
 }

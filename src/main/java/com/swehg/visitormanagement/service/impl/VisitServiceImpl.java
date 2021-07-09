@@ -1,15 +1,19 @@
 package com.swehg.visitormanagement.service.impl;
 
-import com.swehg.visitormanagement.dto.CheckInVisitorDTO;
-import com.swehg.visitormanagement.dto.JwtTokenDTO;
+import com.swehg.visitormanagement.dto.*;
 import com.swehg.visitormanagement.dto.request.CheckInRequestDTO;
+import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
 import com.swehg.visitormanagement.entity.*;
 import com.swehg.visitormanagement.enums.PassCardStatus;
 import com.swehg.visitormanagement.exception.VisitException;
 import com.swehg.visitormanagement.repository.*;
 import com.swehg.visitormanagement.service.VisitService;
+import com.swehg.visitormanagement.util.DateGenerator;
 import com.swehg.visitormanagement.util.TokenValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -25,9 +29,10 @@ public class VisitServiceImpl implements VisitService {
     private final UserRepository userRepository;
     private final VisitRepository visitRepository;
     private final FloorRepository floorRepository;
+    private final DateGenerator dateGenerator;
 
     @Autowired
-    public VisitServiceImpl(EmployeeRepository employeeRepository, VisitorRepository visitorRepository, PassCardRepository passCardRepository, TokenValidator tokenValidator, UserRepository userRepository, VisitRepository visitRepository, FloorRepository floorRepository) {
+    public VisitServiceImpl(EmployeeRepository employeeRepository, VisitorRepository visitorRepository, PassCardRepository passCardRepository, TokenValidator tokenValidator, UserRepository userRepository, VisitRepository visitRepository, FloorRepository floorRepository, DateGenerator dateGenerator) {
         this.employeeRepository = employeeRepository;
         this.visitorRepository = visitorRepository;
         this.passCardRepository = passCardRepository;
@@ -35,6 +40,7 @@ public class VisitServiceImpl implements VisitService {
         this.userRepository = userRepository;
         this.visitRepository = visitRepository;
         this.floorRepository = floorRepository;
+        this.dateGenerator = dateGenerator;
     }
 
     /**
@@ -116,6 +122,68 @@ public class VisitServiceImpl implements VisitService {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    @Override
+    public Page<CommonVisitResponseDTO> getAllNotCheckOut(int index, int size) {
+        try {
+            Pageable pageable = PageRequest.of(index, size);
+            Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllNotCheckOutByDateRange(dateGenerator.setTime(8, 30, 0, 0), dateGenerator.setTime(18, 00, 0, 0), pageable);
+            return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    private CommonVisitResponseDTO mapVisitEntityToCommonVisitResponseDTO(VisitEntity v) {
+
+        return new CommonVisitResponseDTO(
+            v.getId(),
+                new VisitorDTO(v.getVisitorEntity().getId(),
+                        v.getVisitorEntity().getFirstName(),
+                        v.getVisitorEntity().getLastName(),
+                        v.getVisitorEntity().getMobile(),
+                        v.getVisitorEntity().getNic(),
+                        v.getVisitorEntity().getEmail(),
+                        v.getVisitorEntity().getCreatedDate()
+                ),
+                v.getCheckinTime(),
+                null,
+                v.getPurpose(),
+                new UserAllDetailDTO(v.getCheckInUserEntity().getId(),
+                        null,
+                        v.getCheckInUserEntity().getFirstName(),
+                        v.getCheckInUserEntity().getLastName(),
+                        v.getCheckInUserEntity().getNic(),
+                        null,
+                        null,
+                        null,
+                        null,
+                        v.getCheckInUserEntity().getRole(),
+                        v.getCheckInUserEntity().getStatus()
+                ),
+                null,
+                new FloorDTO(v.getFloorEntity().getId(),
+                        v.getFloorEntity().getName(),
+                        new BuildingDTO(v.getFloorEntity().getBuildingEntity().getId(),
+                                v.getFloorEntity().getBuildingEntity().getName(),
+                                v.getFloorEntity().getBuildingEntity().getBuildingStatus()
+                        )
+                ),
+                new PassCardDTO(v.getPassCardEntity().getId(),
+                        v.getPassCardEntity().getName(),
+                        v.getPassCardEntity().getStatus()
+                ),
+                new EmployeeDTO(v.getEmployeeEntity().getId(),
+                        v.getEmployeeEntity().getFirstName(),
+                        v.getEmployeeEntity().getLastName(),
+                        v.getEmployeeEntity().getNic(),
+                        v.getEmployeeEntity().getEmail(),
+                        v.getEmployeeEntity().getMobile(),
+                        v.getEmployeeEntity().getDesignation()
+                )
+        );
+
     }
 
 }
