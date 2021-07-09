@@ -87,4 +87,35 @@ public class VisitServiceImpl implements VisitService {
         }
     }
 
+    @Override
+    public boolean checkOut(long visitId) {
+        try {
+
+            JwtTokenDTO jwtTokenDTO = tokenValidator.retrieveCurrentUserInformationFromToken();
+            long user_id = jwtTokenDTO.getUser_id();
+
+            Optional<UserEntity> userById = userRepository.findById(user_id);
+            if(!userById.isPresent()) throw new VisitException("User not found");
+
+            Optional<VisitEntity> visitById = visitRepository.findById(visitId);
+            if(!visitById.isPresent()) throw new VisitException("Visit not found");
+
+            VisitEntity visitEntity = visitById.get();
+            visitEntity.setCheckoutTime(new Date());
+            visitEntity.setCheckOutUserEntity(userById.get());
+
+            VisitEntity savedVisit = visitRepository.save(visitEntity);
+
+            PassCardEntity passCardEntity = savedVisit.getPassCardEntity();
+            passCardEntity.setStatus(PassCardStatus.ACTIVE);
+
+            passCardRepository.save(passCardEntity);
+
+            return true;
+
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
 }

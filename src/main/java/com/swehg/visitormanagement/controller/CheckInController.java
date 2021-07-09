@@ -37,4 +37,10 @@ public class CheckInController {
         return new ResponseEntity(new CommonResponseDTO(true, "Visitor(s) checked in successfully", null), HttpStatus.OK);
     }
 
+    @PatchMapping(value = "/checkout", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity checkOut(@RequestParam("id") long visitId) {
+        visitService.checkOut(visitId);
+        return new ResponseEntity(new CommonResponseDTO(true, "Visitor checked out successfully", null), HttpStatus.OK);
+    }
+
 }
