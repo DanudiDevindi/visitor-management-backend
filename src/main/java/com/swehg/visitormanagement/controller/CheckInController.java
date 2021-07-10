@@ -3,6 +3,7 @@ package com.swehg.visitormanagement.controller;
 import com.swehg.visitormanagement.dto.request.CheckInRequestDTO;
 import com.swehg.visitormanagement.dto.response.CommonResponseDTO;
 import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
+import com.swehg.visitormanagement.enums.HistorySearchTypes;
 import com.swehg.visitormanagement.service.VisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 /**
  * this controller responsible for visitor checkin process
@@ -55,6 +58,12 @@ public class CheckInController {
     public ResponseEntity getOverdueCheckin(@RequestParam("word") String word, @RequestParam("index") int index, @RequestParam("size") int size) {
         Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getAllOverdueCheckin(word, index, size);
         return new ResponseEntity(new CommonResponseDTO(true, "Overdue checkin records found successfully", allNotCheckOut), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/history", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getHistory(@RequestParam("type") HistorySearchTypes type, @RequestParam("word") String word, @RequestParam("startDate") Date startDate, @RequestParam("endDate") Date endDate, @RequestParam("index") int index, @RequestParam("size") int size) {
+        Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getHistory(type, word, startDate, endDate, index, size);
+        return new ResponseEntity(new CommonResponseDTO(true, "Visit history records found successfully", allNotCheckOut), HttpStatus.OK);
     }
 
 }

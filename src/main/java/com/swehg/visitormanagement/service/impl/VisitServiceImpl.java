@@ -4,6 +4,7 @@ import com.swehg.visitormanagement.dto.*;
 import com.swehg.visitormanagement.dto.request.CheckInRequestDTO;
 import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
 import com.swehg.visitormanagement.entity.*;
+import com.swehg.visitormanagement.enums.HistorySearchTypes;
 import com.swehg.visitormanagement.enums.PassCardStatus;
 import com.swehg.visitormanagement.exception.VisitException;
 import com.swehg.visitormanagement.repository.*;
@@ -141,6 +142,33 @@ public class VisitServiceImpl implements VisitService {
             Pageable pageable = PageRequest.of(index, size);
             Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllOverdueCheckinByDateRange(word, new Date(), dateGenerator.setTime(18, 00, 0, 0), pageable);
             return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public Page<CommonVisitResponseDTO> getHistory(HistorySearchTypes type, String word, Date startDate, Date endDate, int index, int size) {
+        try {
+
+            Pageable pageable = PageRequest.of(index, size);
+
+            Page<VisitEntity> allVisitHistory =  null;
+
+            if(type.equals(HistorySearchTypes.ALL)) {
+                allVisitHistory = visitRepository.getAllVisitHistory(word, startDate, endDate, pageable);
+            }
+
+            if(type.equals(HistorySearchTypes.NOTCHECKOUT)) {
+                allVisitHistory = visitRepository.getAllNotCheckOutVisitHistory(word, startDate, endDate, pageable);
+            }
+
+            if(type.equals(HistorySearchTypes.CHECKOUT)) {
+                allVisitHistory = visitRepository.getAllCheckedOutVisitHistory(word, startDate, endDate, pageable);
+            }
+
+            return allVisitHistory.map(this::mapVisitEntityToCommonVisitResponseDTO);
+
         } catch (Exception e) {
             throw e;
         }
