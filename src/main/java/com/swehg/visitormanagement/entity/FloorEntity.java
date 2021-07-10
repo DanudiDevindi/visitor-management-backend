@@ -23,4 +23,10 @@ public class FloorEntity {
     private BuildingEntity buildingEntity;
     @Enumerated(EnumType.STRING)
     private FloorStatus floorStatus;
+
+    public FloorEntity(String name, BuildingEntity buildingEntity, FloorStatus floorStatus) {
+        this.name = name;
+        this.buildingEntity = buildingEntity;
+        this.floorStatus = floorStatus;
+    }
 }

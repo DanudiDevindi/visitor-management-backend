@@ -3,8 +3,10 @@ package com.swehg.visitormanagement.service.impl;
 import com.swehg.visitormanagement.dto.BuildingDTO;
 import com.swehg.visitormanagement.entity.BuildingEntity;
 import com.swehg.visitormanagement.enums.BuildingStatus;
+import com.swehg.visitormanagement.enums.FloorStatus;
 import com.swehg.visitormanagement.exception.BuildingException;
 import com.swehg.visitormanagement.repository.BuildingRepository;
+import com.swehg.visitormanagement.repository.FloorRepository;
 import com.swehg.visitormanagement.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,12 @@ import java.util.Optional;
 public class BuildingServiceImpl implements BuildingService {
 
     private final BuildingRepository buildingRepository;
+    private final FloorRepository floorRepository;
 
     @Autowired
-    public BuildingServiceImpl(BuildingRepository buildingRepository) {
+    public BuildingServiceImpl(BuildingRepository buildingRepository, FloorRepository floorRepository) {
         this.buildingRepository = buildingRepository;
+        this.floorRepository = floorRepository;
     }
 
     @Override
@@ -44,6 +48,13 @@ public class BuildingServiceImpl implements BuildingService {
             BuildingEntity buildingEntity = buildingById.get();
             buildingEntity.setName(dto.getName());
             buildingEntity.setBuildingStatus(dto.getStatus());
+
+            if(dto.getStatus().equals(BuildingStatus.DELETED)) {
+                floorRepository.updateFloorStatusByBuilding(buildingEntity, FloorStatus.DELETED);
+            }
+            if(dto.getStatus().equals(BuildingStatus.INACTIVE)) {
+                floorRepository.updateFloorStatusByBuilding(buildingEntity, FloorStatus.INACTIVE);
+            }
             buildingRepository.save(buildingEntity);
 
             return true;
@@ -57,7 +68,7 @@ public class BuildingServiceImpl implements BuildingService {
     public List<BuildingDTO> getAllBuildings() {
         try {
 
-            List<BuildingEntity> all = buildingRepository.findAll();
+            List<BuildingEntity> all = buildingRepository.getAllByExceptBuildingStatus(BuildingStatus.DELETED);
             List<BuildingDTO> buildingList = new ArrayList<>();
             for (BuildingEntity b : all) {
                 buildingList.add(new BuildingDTO(b.getId(), b.getName(), b.getBuildingStatus()));

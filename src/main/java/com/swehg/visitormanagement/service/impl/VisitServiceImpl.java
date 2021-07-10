@@ -207,7 +207,8 @@ public class VisitServiceImpl implements VisitService {
                         new BuildingDTO(v.getFloorEntity().getBuildingEntity().getId(),
                                 v.getFloorEntity().getBuildingEntity().getName(),
                                 v.getFloorEntity().getBuildingEntity().getBuildingStatus()
-                        )
+                        ),
+                        v.getFloorEntity().getFloorStatus()
                 ),
                 new PassCardDTO(v.getPassCardEntity().getId(),
                         v.getPassCardEntity().getName(),
