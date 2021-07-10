@@ -17,8 +17,13 @@ public class BuildingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column
+    @Column(unique = true)
     private String name;
     @Enumerated(EnumType.STRING)
     private BuildingStatus buildingStatus;
+
+    public BuildingEntity(String name, BuildingStatus buildingStatus) {
+        this.name = name;
+        this.buildingStatus = buildingStatus;
+    }
 }

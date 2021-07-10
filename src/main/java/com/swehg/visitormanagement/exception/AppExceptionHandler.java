@@ -36,4 +36,10 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
                 new ErrorMessageResponseDTO(false, ex.getStatus(), ex.getMsg()), HttpStatus.EXPECTATION_FAILED);
     }
 
+    @ExceptionHandler(value = {BuildingException.class})
+    ResponseEntity<ErrorMessageResponseDTO> handleBuildingException(BuildingException ex, WebRequest webRequest) {
+        return new ResponseEntity<>(
+                new ErrorMessageResponseDTO(false, ex.getStatus(), ex.getMsg()), HttpStatus.EXPECTATION_FAILED);
+    }
+
 }

@@ -1,0 +1,54 @@
+package com.swehg.visitormanagement.controller;
+
+import com.swehg.visitormanagement.dto.BuildingDTO;
+import com.swehg.visitormanagement.dto.response.CommonResponseDTO;
+import com.swehg.visitormanagement.service.BuildingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * @author hp
+ */
+
+@RestController
+@CrossOrigin
+@RequestMapping("v1/building")
+public class BuildingController {
+
+    private final BuildingService buildingService;
+
+    @Autowired
+    public BuildingController(BuildingService buildingService) {
+        this.buildingService = buildingService;
+    }
+
+    @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addBuilding(@RequestBody BuildingDTO buildingDTO) {
+        boolean result = buildingService.addBuilding(buildingDTO);
+        return new ResponseEntity(new CommonResponseDTO( result, "Building saved successfully", null), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateBuilding(@RequestBody BuildingDTO buildingDTO) {
+        boolean result = buildingService.addBuilding(buildingDTO);
+        return new ResponseEntity(new CommonResponseDTO( result, "Building updated successfully", null), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAllBuilding() {
+        List<BuildingDTO> allBuildings = buildingService.getAllBuildings();
+        return new ResponseEntity(new CommonResponseDTO( true, "Building records found successfully", allBuildings), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/ative", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getActiveBuilding() {
+        List<BuildingDTO> allBuildings = buildingService.getAllActiveBuildings();
+        return new ResponseEntity(new CommonResponseDTO( true, "Active building records found successfully", allBuildings), HttpStatus.OK);
+    }
+
+}
