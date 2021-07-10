@@ -1,5 +1,7 @@
 package com.swehg.visitormanagement.util;
 
+import org.springframework.stereotype.Component;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import java.util.Date;
  * @author kavindu
  */
 
+@Component
 public class DateGenerator {
 
     public Date setTime(int h, int m, int s, int ms) {

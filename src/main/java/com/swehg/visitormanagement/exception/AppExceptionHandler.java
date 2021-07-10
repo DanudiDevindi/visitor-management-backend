@@ -24,4 +24,16 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
                 new ErrorMessageResponseDTO(false, ex.getStatus(), ex.getMsg()), HttpStatus.EXPECTATION_FAILED);
     }
 
+    @ExceptionHandler(value = {VisitException.class})
+    ResponseEntity<ErrorMessageResponseDTO> handleVisitException(VisitException ex, WebRequest webRequest) {
+        return new ResponseEntity<>(
+                new ErrorMessageResponseDTO(false, ex.getStatus(), ex.getMsg()), HttpStatus.EXPECTATION_FAILED);
+    }
+
+    @ExceptionHandler(value = {VisitorException.class})
+    ResponseEntity<ErrorMessageResponseDTO> handleVisitorException(VisitorException ex, WebRequest webRequest) {
+        return new ResponseEntity<>(
+                new ErrorMessageResponseDTO(false, ex.getStatus(), ex.getMsg()), HttpStatus.EXPECTATION_FAILED);
+    }
+
 }
