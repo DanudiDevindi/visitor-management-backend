@@ -135,6 +135,17 @@ public class VisitServiceImpl implements VisitService {
         }
     }
 
+    @Override
+    public Page<CommonVisitResponseDTO> getAllOverdueCheckin(int index, int size) {
+        try {
+            Pageable pageable = PageRequest.of(index, size);
+            Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllOverdueCheckinByDateRange(new Date(), dateGenerator.setTime(18, 00, 0, 0), pageable);
+            return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     private CommonVisitResponseDTO mapVisitEntityToCommonVisitResponseDTO(VisitEntity v) {
 
         return new CommonVisitResponseDTO(
@@ -185,5 +196,6 @@ public class VisitServiceImpl implements VisitService {
         );
 
     }
+
 
 }

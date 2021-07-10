@@ -8,4 +8,5 @@ public interface VisitService {
     boolean checkIn(CheckInRequestDTO dto);
     boolean checkOut(long visitId);
     Page<CommonVisitResponseDTO> getAllNotCheckOut(int index, int size);
+    Page<CommonVisitResponseDTO> getAllOverdueCheckin(int index, int size);
 }
