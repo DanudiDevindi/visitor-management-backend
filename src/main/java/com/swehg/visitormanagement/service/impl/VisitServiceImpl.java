@@ -125,10 +125,10 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public Page<CommonVisitResponseDTO> getAllNotCheckOut(int index, int size) {
+    public Page<CommonVisitResponseDTO> getAllNotCheckOut(String word, int index, int size) {
         try {
             Pageable pageable = PageRequest.of(index, size);
-            Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllNotCheckOutByDateRange(dateGenerator.setTime(8, 30, 0, 0), dateGenerator.setTime(18, 00, 0, 0), pageable);
+            Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllNotCheckOutByDateRange(word, dateGenerator.setTime(8, 30, 0, 0), dateGenerator.setTime(18, 00, 0, 0), pageable);
             return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
         } catch (Exception e) {
             throw e;
@@ -136,10 +136,10 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public Page<CommonVisitResponseDTO> getAllOverdueCheckin(int index, int size) {
+    public Page<CommonVisitResponseDTO> getAllOverdueCheckin(String word, int index, int size) {
         try {
             Pageable pageable = PageRequest.of(index, size);
-            Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllOverdueCheckinByDateRange(new Date(), dateGenerator.setTime(18, 00, 0, 0), pageable);
+            Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllOverdueCheckinByDateRange(word, new Date(), dateGenerator.setTime(18, 00, 0, 0), pageable);
             return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
         } catch (Exception e) {
             throw e;

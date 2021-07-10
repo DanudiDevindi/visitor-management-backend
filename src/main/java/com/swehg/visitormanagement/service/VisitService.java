@@ -7,6 +7,6 @@ import org.springframework.data.domain.Page;
 public interface VisitService {
     boolean checkIn(CheckInRequestDTO dto);
     boolean checkOut(long visitId);
-    Page<CommonVisitResponseDTO> getAllNotCheckOut(int index, int size);
-    Page<CommonVisitResponseDTO> getAllOverdueCheckin(int index, int size);
+    Page<CommonVisitResponseDTO> getAllNotCheckOut(String word, int index, int size);
+    Page<CommonVisitResponseDTO> getAllOverdueCheckin(String word, int index, int size);
 }

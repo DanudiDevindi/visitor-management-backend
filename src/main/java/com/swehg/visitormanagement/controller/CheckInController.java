@@ -46,14 +46,14 @@ public class CheckInController {
     }
 
     @GetMapping(value = "/checked", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity checkOut(@RequestParam("index") int index, @RequestParam("size") int size) {
-        Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getAllNotCheckOut(index, size);
+    public ResponseEntity checkOut(@RequestParam("word") String word, @RequestParam("index") int index, @RequestParam("size") int size) {
+        Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getAllNotCheckOut(word, index, size);
         return new ResponseEntity(new CommonResponseDTO(true, "Checked in records found successfully", allNotCheckOut), HttpStatus.OK);
     }
 
     @GetMapping(value = "/overdue", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getOverdueCheckin(@RequestParam("index") int index, @RequestParam("size") int size) {
-        Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getAllOverdueCheckin(index, size);
+    public ResponseEntity getOverdueCheckin(@RequestParam("word") String word, @RequestParam("index") int index, @RequestParam("size") int size) {
+        Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getAllOverdueCheckin(word, index, size);
         return new ResponseEntity(new CommonResponseDTO(true, "Overdue checkin records found successfully", allNotCheckOut), HttpStatus.OK);
     }
 
