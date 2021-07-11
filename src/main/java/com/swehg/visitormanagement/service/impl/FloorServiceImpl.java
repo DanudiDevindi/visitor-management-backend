@@ -49,7 +49,13 @@ public class FloorServiceImpl implements FloorService {
             if(!floorById.isPresent()) throw new FloorException("Floor not found");
             Optional<BuildingEntity> buildingById = buildingRepository.findById(dto.getBuildingId());
             if(!buildingById.isPresent()) throw new FloorException("Building not found");
-            floorRepository.save(new FloorEntity(dto.getName(), buildingById.get(), dto.getStatus()));
+
+            FloorEntity floorEntity = floorById.get();
+            floorEntity.setName(dto.getName());
+            floorEntity.setBuildingEntity(buildingById.get());
+            floorEntity.setFloorStatus(dto.getStatus());
+
+            floorRepository.save(floorEntity);
             return true;
         } catch (Exception e) {
             throw e;

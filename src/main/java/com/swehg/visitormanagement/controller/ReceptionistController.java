@@ -34,13 +34,13 @@ public class ReceptionistController {
         return new ResponseEntity(new CommonResponseDTO( result, "Receptionist account created successfully", null), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateReceptionist(@RequestBody UserAllDetailDTO userAllDetailDTO) {
         boolean result = userService.updateUser(userAllDetailDTO);
         return new ResponseEntity(new CommonResponseDTO( result, "Receptionist account updated successfully", null), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateReceptionist(@RequestParam("word") String word) {
         List<UserAllDetailDTO> result = userService.getAllUser(word);
         return new ResponseEntity(new CommonResponseDTO( true, "Receptionist account records found successfully", result), HttpStatus.OK);

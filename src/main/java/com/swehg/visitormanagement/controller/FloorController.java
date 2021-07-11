@@ -49,7 +49,7 @@ public class FloorController {
 
     @GetMapping(value = "/active", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getActiveFloor() {
-        List<FloorDTO> allFloor = floorService.getAllFloor();
+        List<FloorDTO> allFloor = floorService.getActiveFloor();
         return new ResponseEntity(new CommonResponseDTO(true, "Active floor records found successfully", allFloor), HttpStatus.OK);
     }
 

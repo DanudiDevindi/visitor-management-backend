@@ -27,15 +27,18 @@ public class BuildingController {
         this.buildingService = buildingService;
     }
 
-    @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/add")
     public ResponseEntity addBuilding(@RequestBody BuildingDTO buildingDTO) {
+
+        System.out.println("1111111111111111111");
+
         boolean result = buildingService.addBuilding(buildingDTO);
         return new ResponseEntity(new CommonResponseDTO( result, "Building saved successfully", null), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateBuilding(@RequestBody BuildingDTO buildingDTO) {
-        boolean result = buildingService.addBuilding(buildingDTO);
+        boolean result = buildingService.updateBuilding(buildingDTO);
         return new ResponseEntity(new CommonResponseDTO( result, "Building updated successfully", null), HttpStatus.OK);
     }
 
@@ -45,7 +48,7 @@ public class BuildingController {
         return new ResponseEntity(new CommonResponseDTO( true, "Building records found successfully", allBuildings), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/ative", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/active", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getActiveBuilding() {
         List<BuildingDTO> allBuildings = buildingService.getAllActiveBuildings();
         return new ResponseEntity(new CommonResponseDTO( true, "Active building records found successfully", allBuildings), HttpStatus.OK);

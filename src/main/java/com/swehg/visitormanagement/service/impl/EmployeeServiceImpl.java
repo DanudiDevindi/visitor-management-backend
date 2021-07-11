@@ -33,9 +33,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(dto.getMobile());
             Optional<EmployeeEntity> byEmail = employeeRepository.findByEmail(dto.getEmail());
 
-            if(!byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
-            if(!byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
-            if(!byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
+            System.out.println(byNic.isPresent());
+
+            if(byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
+            if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
+            if(byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
 
             employeeRepository.save(new EmployeeEntity(dto.getEmployeeId(),
                     dto.getFirstName(),
@@ -62,17 +64,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if(!employeeEntity.getNic().equals(dto.getNic())) {
             Optional<EmployeeEntity> byNic = employeeRepository.findByNic(dto.getNic());
-            if(!byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
+            if(byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
         }
 
         if(!employeeEntity.getMobile().equals(dto.getMobile())) {
             Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(dto.getMobile());
-            if(!byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
+            if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
         }
 
         if(!employeeEntity.getEmail().equals(dto.getEmail())) {
             Optional<EmployeeEntity> byEmail = employeeRepository.findByEmail(dto.getEmail());
-            if (!byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
+            if (byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
         }
 
         employeeEntity.setFirstName(dto.getFirstName());

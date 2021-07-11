@@ -38,7 +38,7 @@ public class EmployeeController {
         return new ResponseEntity(new CommonResponseDTO(result, "Employee updated successfully", null), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllEmployee(@RequestParam("word") String word, @RequestParam("index") int index, @RequestParam("size") int size) {
         Page<EmployeeDTO> result = employeeService.getAllEmployee(word, index, size);
         return new ResponseEntity(new CommonResponseDTO(true, "Employee records found successfully", result), HttpStatus.OK);

@@ -35,10 +35,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean addUser(UserAllDetailDTO dto) {
         try {
+
+
+
             Optional<UserEntity> byNic = userRepository.findByNic(dto.getNic());
-            if(!byNic.isPresent()) throw new UserException("This employee already have an account");
+            if(byNic.isPresent()) throw new UserException("This employee already have an account");
             Optional<UserEntity> byUsername = userRepository.findByUsername(dto.getUserName());
-            if(!byUsername.isPresent()) throw new UserException("This username already exist");
+            if(byUsername.isPresent()) throw new UserException("This username already exist");
             userRepository.save(new UserEntity(dto.getUserId(),
                     dto.getUserName(),
                     dto.getFirstName(),
