@@ -14,5 +14,5 @@ public class OAuth2Constant {
     public static final int ACCESS_TOKEN_VALIDITY_SECONDS = 60 * 60 * 24 * 30;
     public static final int REFRESH_TOKEN_VALIDITY_SECONDS = 60 * 60 * 24 * 30;
     public static final String TOKEN_SIGN_IN_KEY = "w*KLT+Q9$L8Sa@BB";
-    public static final String OPEN_API_KEY = "ceyentra";
+    public static final String OPEN_API_KEY = "";
 }

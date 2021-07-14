@@ -24,6 +24,79 @@ public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter {
         http.
                 anonymous().disable()
                 .authorizeRequests()
+
+                // building
+                .antMatchers("/v1/building/add")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/building/update")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/building/all")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/building/active")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                // visits
+                .antMatchers("/v1/visit/checkin")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                .antMatchers("/v1/visit/checkout")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                .antMatchers("/v1/visit/checked")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                .antMatchers("/v1/visit/overdue")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                .antMatchers("/v1/visit/history")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                .antMatchers("/v1/visit/checked")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                // employee
+                .antMatchers("/v1/employee/add")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/employee/update")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/employee/all")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                // floor
+                .antMatchers("/v1/floor/add")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/floor/update")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/floor/all")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/floor/active")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                // receptionist
+                .antMatchers("/v1/receptionist/add")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/receptionist/update")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/receptionist/all")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                //visitor
+                .antMatchers("/v1/visitor/filter/nic")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                .antMatchers("/v1/visitor/filter")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
                 .antMatchers("/v1/**").permitAll()
                 .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
     }

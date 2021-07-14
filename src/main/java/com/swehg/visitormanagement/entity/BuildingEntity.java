@@ -1,10 +1,10 @@
 package com.swehg.visitormanagement.entity;
 
 import com.swehg.visitormanagement.enums.BuildingStatus;
-import com.swehg.visitormanagement.enums.FloorStatus;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,6 +21,8 @@ public class BuildingEntity {
     private String name;
     @Enumerated(EnumType.STRING)
     private BuildingStatus buildingStatus;
+    @OneToMany(mappedBy = "buildingEntity")
+    private List<FloorEntity> floorEntityList;
 
     public BuildingEntity(String name, BuildingStatus buildingStatus) {
         this.name = name;
