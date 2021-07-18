@@ -8,6 +8,7 @@ import com.swehg.visitormanagement.enums.UserStatus;
 import com.swehg.visitormanagement.exception.UserException;
 import com.swehg.visitormanagement.repository.UserRepository;
 import com.swehg.visitormanagement.service.UserService;
+import com.swehg.visitormanagement.util.EmailSender;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,19 +25,19 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final EmailSender emailSender;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder, EmailSender emailSender) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.emailSender = emailSender;
     }
 
     @Override
     public boolean addUser(UserAllDetailDTO dto) {
         try {
-
-
 
             Optional<UserEntity> byNic = userRepository.findByNic(dto.getNic());
             if(byNic.isPresent()) throw new UserException("This employee already have an account");
@@ -127,6 +128,18 @@ public class UserServiceImpl implements UserService {
             }
 
             return all;
+
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public boolean sendEmail(String email,String sub, String body) {
+        try {
+
+            emailSender.send(email, sub, body);
+            return true;
 
         } catch (Exception e) {
             throw e;

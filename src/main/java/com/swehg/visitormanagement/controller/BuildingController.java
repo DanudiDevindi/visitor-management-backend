@@ -3,6 +3,7 @@ package com.swehg.visitormanagement.controller;
 import com.swehg.visitormanagement.dto.BuildingDTO;
 import com.swehg.visitormanagement.dto.response.CommonResponseDTO;
 import com.swehg.visitormanagement.service.BuildingService;
+import com.swehg.visitormanagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,10 +22,12 @@ import java.util.List;
 public class BuildingController {
 
     private final BuildingService buildingService;
+    private final UserService userService;
 
     @Autowired
-    public BuildingController(BuildingService buildingService) {
+    public BuildingController(BuildingService buildingService, UserService userService) {
         this.buildingService = buildingService;
+        this.userService = userService;
     }
 
     @PostMapping(value = "/add")
@@ -52,6 +55,12 @@ public class BuildingController {
     public ResponseEntity getActiveBuilding() {
         List<BuildingDTO> allBuildings = buildingService.getAllActiveBuildings();
         return new ResponseEntity(new CommonResponseDTO( true, "Active building records found successfully", allBuildings), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/email", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity sendMail(@RequestParam("email") String email, @RequestParam("sub") String sub, @RequestParam("message") String message) {
+        boolean b = userService.sendEmail(email, sub, message);
+        return new ResponseEntity(new CommonResponseDTO( true, "Email sent successfully", null), HttpStatus.OK);
     }
 
 }

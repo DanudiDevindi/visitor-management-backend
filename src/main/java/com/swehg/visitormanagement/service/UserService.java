@@ -10,4 +10,7 @@ public interface UserService {
     boolean updateUser(UserAllDetailDTO dto);
     UserDTO getUserDetailsByUsername(String username);
     List<UserAllDetailDTO> getAllUser(String word);
+
+    boolean sendEmail(String email, String sub, String body);
+
 }

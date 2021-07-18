@@ -10,6 +10,8 @@ import com.swehg.visitormanagement.exception.VisitException;
 import com.swehg.visitormanagement.repository.*;
 import com.swehg.visitormanagement.service.VisitService;
 import com.swehg.visitormanagement.util.DateGenerator;
+import com.swehg.visitormanagement.util.EmailSender;
+import com.swehg.visitormanagement.util.EmailTemplateGen;
 import com.swehg.visitormanagement.util.TokenValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,9 +33,11 @@ public class VisitServiceImpl implements VisitService {
     private final VisitRepository visitRepository;
     private final FloorRepository floorRepository;
     private final DateGenerator dateGenerator;
+    private final EmailTemplateGen emailTemplateGen;
+    private final EmailSender emailSender;
 
     @Autowired
-    public VisitServiceImpl(EmployeeRepository employeeRepository, VisitorRepository visitorRepository, PassCardRepository passCardRepository, TokenValidator tokenValidator, UserRepository userRepository, VisitRepository visitRepository, FloorRepository floorRepository, DateGenerator dateGenerator) {
+    public VisitServiceImpl(EmployeeRepository employeeRepository, VisitorRepository visitorRepository, PassCardRepository passCardRepository, TokenValidator tokenValidator, UserRepository userRepository, VisitRepository visitRepository, FloorRepository floorRepository, DateGenerator dateGenerator, EmailTemplateGen emailTemplateGen, EmailSender emailSender) {
         this.employeeRepository = employeeRepository;
         this.visitorRepository = visitorRepository;
         this.passCardRepository = passCardRepository;
@@ -42,6 +46,8 @@ public class VisitServiceImpl implements VisitService {
         this.visitRepository = visitRepository;
         this.floorRepository = floorRepository;
         this.dateGenerator = dateGenerator;
+        this.emailTemplateGen = emailTemplateGen;
+        this.emailSender = emailSender;
     }
 
     /**
@@ -84,7 +90,8 @@ public class VisitServiceImpl implements VisitService {
                 if(passCardEntity.getStatus().equals(PassCardStatus.RESERVED)) throw new VisitException("Pass card" + passCardEntity.getName() + " already reserved");
                 passCardEntity.setStatus(PassCardStatus.RESERVED);
                 PassCardEntity savedPassCard = passCardRepository.save(passCardEntity);
-                visitRepository.save(new VisitEntity(visitorEntity, new Date(), null, dto.getPurpose(), userById.get(), null, floorById.get(), savedPassCard, employeeById.get()));
+                VisitEntity save = visitRepository.save(new VisitEntity(visitorEntity, new Date(), null, dto.getPurpose(), userById.get(), null, floorById.get(), savedPassCard, employeeById.get()));
+                emailSender.send(save.getEmployeeEntity().getEmail(), "Visito: New Visitor", emailTemplateGen.getCheckInEmailTemplate(save));
             }
 
             return true;
@@ -117,6 +124,8 @@ public class VisitServiceImpl implements VisitService {
             passCardEntity.setStatus(PassCardStatus.ACTIVE);
 
             passCardRepository.save(passCardEntity);
+
+            emailSender.send(savedVisit.getEmployeeEntity().getEmail(), "Visito: Visitor checked out", emailTemplateGen.getCheckedOut(savedVisit));
 
             return true;
 
