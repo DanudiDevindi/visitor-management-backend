@@ -10,12 +10,15 @@ import com.swehg.visitormanagement.repository.FloorRepository;
 import com.swehg.visitormanagement.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class BuildingServiceImpl implements BuildingService {
 
     private final BuildingRepository buildingRepository;
@@ -40,6 +43,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public boolean deleteBuilding(long id) {
         try {
 
@@ -47,7 +51,7 @@ public class BuildingServiceImpl implements BuildingService {
             if(!buildingById.isPresent()) throw new BuildingException("Building not found");
             BuildingEntity buildingEntity = buildingById.get();
             buildingEntity.setBuildingStatus(BuildingStatus.DELETED);
-            floorRepository.updateFloorStatusByBuilding(buildingEntity, FloorStatus.DELETED);
+            floorRepository.updateFloorStatusByBuilding(FloorStatus.DELETED, buildingEntity.getId());
             buildingRepository.save(buildingEntity);
             return true;
 
@@ -57,6 +61,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public boolean updateBuilding(BuildingDTO dto) {
         try {
 
@@ -67,7 +72,7 @@ public class BuildingServiceImpl implements BuildingService {
             buildingEntity.setBuildingStatus(dto.getStatus());
 
             if(dto.getStatus().equals(BuildingStatus.INACTIVE)) {
-                floorRepository.updateFloorStatusByBuilding(buildingEntity, FloorStatus.INACTIVE);
+                floorRepository.updateFloorStatusByBuilding(FloorStatus.INACTIVE, buildingEntity.getId());
             }
 
             buildingRepository.save(buildingEntity);

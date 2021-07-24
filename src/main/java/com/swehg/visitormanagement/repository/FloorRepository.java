@@ -4,6 +4,7 @@ import com.swehg.visitormanagement.entity.BuildingEntity;
 import com.swehg.visitormanagement.entity.FloorEntity;
 import com.swehg.visitormanagement.enums.FloorStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -15,6 +16,7 @@ public interface FloorRepository extends JpaRepository<FloorEntity, Long> {
 
     List<FloorEntity> findAllByFloorStatus(FloorStatus floorStatus);
 
-    @Query("UPDATE FloorEntity f SET f.floorStatus=:floorStatus WHERE f.buildingEntity=:building")
-    int updateFloorStatusByBuilding(@Param("building") BuildingEntity buildingEntity, @Param("floorStatus") FloorStatus floorStatus);
+    @Modifying
+    @Query(value = "UPDATE floor f SET f.floor_status=?1 WHERE f.building_id=?2", nativeQuery = true)
+    int updateFloorStatusByBuilding(FloorStatus floorStatus, long id);
 }
