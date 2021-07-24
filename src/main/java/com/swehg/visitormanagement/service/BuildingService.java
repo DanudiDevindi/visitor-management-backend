@@ -7,6 +7,7 @@ import java.util.List;
 public interface BuildingService {
     boolean addBuilding(BuildingDTO dto);
     boolean updateBuilding(BuildingDTO dto);
+    boolean deleteBuilding(long id);
     List<BuildingDTO> getAllBuildings();
     List<BuildingDTO> getAllActiveBuildings();
 }

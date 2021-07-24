@@ -40,6 +40,20 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
+    public boolean deleteBuilding(long id) {
+        try {
+
+            Optional<BuildingEntity> buildingById = buildingRepository.findById(id);
+            if(!buildingById.isPresent()) throw new BuildingException("Building not found");
+            buildingRepository.deleteById(id);
+            return true;
+
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
     public boolean updateBuilding(BuildingDTO dto) {
         try {
 

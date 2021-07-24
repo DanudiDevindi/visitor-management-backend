@@ -56,5 +56,11 @@ public class BuildingController {
         List<BuildingDTO> allBuildings = buildingService.getAllActiveBuildings();
         return new ResponseEntity(new CommonResponseDTO( true, "Active building records found successfully", allBuildings), HttpStatus.OK);
     }
-    
+
+    @DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity deleteBuilding(@RequestParam("id") long id) {
+        boolean b = buildingService.deleteBuilding(id);
+        return new ResponseEntity(new CommonResponseDTO( true, "Building deleted successfully", null), HttpStatus.OK);
+    }
+
 }
