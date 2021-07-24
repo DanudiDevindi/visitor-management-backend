@@ -53,6 +53,12 @@ public class FloorController {
         return new ResponseEntity(new CommonResponseDTO(true, "Active floor records found successfully", allFloor), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/active/building/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getActiveFloor(@PathVariable long id) {
+        List<FloorDTO> allFloor = floorService.getActiveFloorBuildingId(id);
+        return new ResponseEntity(new CommonResponseDTO(true, "Active floor records found successfully", allFloor), HttpStatus.OK);
+    }
+
     @PatchMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteFloor(@RequestParam("id")long id) {
         boolean result = floorService.deleteFloor(id);

@@ -84,6 +84,12 @@ public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter {
                 .antMatchers("/v1/floor/active")
                 .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
 
+                .antMatchers("/v1/floor/active/building/{id}")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                .antMatchers("/v1/floor/delete")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
                 // pass card
                 .antMatchers("/v1/pass/add")
                 .access("hasAnyRole('ROLE_ADMIN')")
