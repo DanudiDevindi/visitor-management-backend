@@ -38,6 +38,10 @@ public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter {
                 .antMatchers("/v1/building/active")
                 .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
 
+                .antMatchers("/v1/building/delete")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+
                 // visits
                 .antMatchers("/v1/visit/checkin")
                 .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
@@ -79,6 +83,22 @@ public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter {
 
                 .antMatchers("/v1/floor/active")
                 .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                // pass card
+                .antMatchers("/v1/pass/add")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/pass/update")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/pass/all")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
+                .antMatchers("/v1/pass/active")
+                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_RECEP')")
+
+                .antMatchers("/v1/pass/delete")
+                .access("hasAnyRole('ROLE_ADMIN')")
 
                 // receptionist
                 .antMatchers("/v1/receptionist/add")

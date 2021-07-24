@@ -20,4 +20,9 @@ public class PassCardEntity {
     private String name;
     @Enumerated(EnumType.STRING)
     private PassCardStatus status;
+
+    public PassCardEntity(String name, PassCardStatus status) {
+        this.name = name;
+        this.status = status;
+    }
 }
