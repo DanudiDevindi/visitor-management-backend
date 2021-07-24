@@ -56,11 +56,5 @@ public class BuildingController {
         List<BuildingDTO> allBuildings = buildingService.getAllActiveBuildings();
         return new ResponseEntity(new CommonResponseDTO( true, "Active building records found successfully", allBuildings), HttpStatus.OK);
     }
-
-    @GetMapping(value = "/email", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity sendMail(@RequestParam("email") String email, @RequestParam("sub") String sub, @RequestParam("message") String message) {
-        boolean b = userService.sendEmail(email, sub, message);
-        return new ResponseEntity(new CommonResponseDTO( true, "Email sent successfully", null), HttpStatus.OK);
-    }
-
+    
 }
