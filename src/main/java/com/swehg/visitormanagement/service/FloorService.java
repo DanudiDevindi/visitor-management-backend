@@ -8,6 +8,7 @@ import java.util.List;
 public interface FloorService {
     boolean addFloor(FloorRequestDTO dto);
     boolean updateFloor(FloorRequestDTO dto);
+    boolean deleteFloor(long id);
     List<FloorDTO> getAllFloor();
     List<FloorDTO> getActiveFloor();
 }

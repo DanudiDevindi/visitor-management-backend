@@ -63,6 +63,20 @@ public class FloorServiceImpl implements FloorService {
     }
 
     @Override
+    public boolean deleteFloor(long id) {
+        try {
+            Optional<FloorEntity> floorById = floorRepository.findById(id);
+            if(!floorById.isPresent()) throw new FloorException("Floor not found");
+            FloorEntity floorEntity = floorById.get();
+            floorEntity.setFloorStatus(FloorStatus.DELETED);
+            floorRepository.save(floorEntity);
+            return true;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
     public List<FloorDTO> getAllFloor() {
         try {
             List<FloorEntity> allFloorsExceptStatus = floorRepository.getAllFloorsExceptStatus(FloorStatus.DELETED);

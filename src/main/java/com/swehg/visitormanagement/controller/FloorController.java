@@ -53,4 +53,10 @@ public class FloorController {
         return new ResponseEntity(new CommonResponseDTO(true, "Active floor records found successfully", allFloor), HttpStatus.OK);
     }
 
+    @PatchMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity deleteFloor(@RequestParam("id")long id) {
+        boolean result = floorService.deleteFloor(id);
+        return new ResponseEntity(new CommonResponseDTO(result, "Floor deleted successfully", null), HttpStatus.OK);
+    }
+
 }
