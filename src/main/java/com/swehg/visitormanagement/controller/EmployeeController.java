@@ -43,4 +43,6 @@ public class EmployeeController {
         Page<EmployeeDTO> result = employeeService.getAllEmployee(word, index, size);
         return new ResponseEntity(new CommonResponseDTO(true, "Employee records found successfully", result), HttpStatus.OK);
     }
+
+
 }

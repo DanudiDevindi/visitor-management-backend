@@ -1,13 +1,10 @@
 package com.swehg.visitormanagement.service.impl;
 
 import com.swehg.visitormanagement.dto.*;
-import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
 import com.swehg.visitormanagement.entity.EmployeeEntity;
-import com.swehg.visitormanagement.entity.VisitEntity;
 import com.swehg.visitormanagement.exception.EmployeeException;
 import com.swehg.visitormanagement.repository.EmployeeRepository;
 import com.swehg.visitormanagement.service.EmployeeService;
-import jdk.nashorn.internal.runtime.options.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,9 +32,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             System.out.println(byNic.isPresent());
 
-            if(byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
-            if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
-            if(byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
+            if (byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
+            if (byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
+            if (byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
 
             employeeRepository.save(new EmployeeEntity(dto.getEmployeeId(),
                     dto.getFirstName(),
@@ -58,21 +55,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     public boolean updateEmployee(EmployeeDTO dto) {
 
         Optional<EmployeeEntity> byId = employeeRepository.findById(dto.getEmployeeId());
-        if(!byId.isPresent()) throw new EmployeeException("Employee not found");
+        if (!byId.isPresent()) throw new EmployeeException("Employee not found");
 
         EmployeeEntity employeeEntity = byId.get();
 
-        if(!employeeEntity.getNic().equals(dto.getNic())) {
+        if (!employeeEntity.getNic().equals(dto.getNic())) {
             Optional<EmployeeEntity> byNic = employeeRepository.findByNic(dto.getNic());
-            if(byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
+            if (byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
         }
 
-        if(!employeeEntity.getMobile().equals(dto.getMobile())) {
+        if (!employeeEntity.getMobile().equals(dto.getMobile())) {
             Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(dto.getMobile());
-            if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
+            if (byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
         }
 
-        if(!employeeEntity.getEmail().equals(dto.getEmail())) {
+        if (!employeeEntity.getEmail().equals(dto.getEmail())) {
             Optional<EmployeeEntity> byEmail = employeeRepository.findByEmail(dto.getEmail());
             if (byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
         }
