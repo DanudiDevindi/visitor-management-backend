@@ -2,8 +2,10 @@ package com.swehg.visitormanagement.service.impl;
 
 import com.swehg.visitormanagement.dto.*;
 import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
+import com.swehg.visitormanagement.dto.response.EmployeeSearchableResponseDTO;
 import com.swehg.visitormanagement.entity.EmployeeEntity;
 import com.swehg.visitormanagement.entity.VisitEntity;
+import com.swehg.visitormanagement.enums.EmployeeStatus;
 import com.swehg.visitormanagement.exception.EmployeeException;
 import com.swehg.visitormanagement.repository.EmployeeRepository;
 import com.swehg.visitormanagement.service.EmployeeService;
@@ -14,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,13 +43,15 @@ public class EmployeeServiceImpl implements EmployeeService {
             if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
             if(byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
 
-            employeeRepository.save(new EmployeeEntity(dto.getEmployeeId(),
+            employeeRepository.save(new EmployeeEntity(
                     dto.getFirstName(),
                     dto.getLastName(),
                     dto.getNic(),
                     dto.getMobile(),
                     dto.getEmail(),
-                    dto.getDesignation()));
+                    dto.getDesignation(),
+                    EmployeeStatus.ACTIVE
+            ));
 
             return true;
 
@@ -94,6 +100,21 @@ public class EmployeeServiceImpl implements EmployeeService {
             Pageable pageable = PageRequest.of(index, size);
             Page<EmployeeEntity> allEmployee = employeeRepository.getAllEmployee(word, pageable);
             return allEmployee.map(this::mapEmployeeEntityToEmployeeDTO);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public List<String> getEmployee() {
+        List<String> searchableEmployeeList = new ArrayList<>();
+        try {
+            List<EmployeeEntity> allEmployee = employeeRepository.getAllEmployeeForSearch(EmployeeStatus.ACTIVE);
+            for (EmployeeEntity e : allEmployee) {
+                EmployeeSearchableResponseDTO dto = new EmployeeSearchableResponseDTO(e.getId(), e.getFirstName(), e.getLastName(), e.getNic(), e.getEmail(), e.getMobile(), e.getDesignation(), e.getFirstName() + " " + e.getLastName() + " - " + e.getMobile());
+                searchableEmployeeList.add(dto.customToString());
+            }
+            return searchableEmployeeList;
         } catch (Exception e) {
             throw e;
         }
