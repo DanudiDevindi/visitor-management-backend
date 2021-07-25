@@ -1,16 +1,23 @@
 package com.swehg.visitormanagement.service.impl;
 
 import com.swehg.visitormanagement.dto.*;
+import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
+import com.swehg.visitormanagement.dto.response.EmployeeSearchableResponseDTO;
 import com.swehg.visitormanagement.entity.EmployeeEntity;
+import com.swehg.visitormanagement.entity.VisitEntity;
+import com.swehg.visitormanagement.enums.EmployeeStatus;
 import com.swehg.visitormanagement.exception.EmployeeException;
 import com.swehg.visitormanagement.repository.EmployeeRepository;
 import com.swehg.visitormanagement.service.EmployeeService;
+import jdk.nashorn.internal.runtime.options.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,17 +39,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             System.out.println(byNic.isPresent());
 
-            if (byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
-            if (byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
-            if (byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
+            if(byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
+            if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
+            if(byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
 
-            employeeRepository.save(new EmployeeEntity(dto.getEmployeeId(),
+            employeeRepository.save(new EmployeeEntity(
                     dto.getFirstName(),
                     dto.getLastName(),
                     dto.getNic(),
                     dto.getMobile(),
                     dto.getEmail(),
-                    dto.getDesignation()));
+                    dto.getDesignation(),
+                    EmployeeStatus.ACTIVE
+            ));
 
             return true;
 
@@ -55,21 +64,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     public boolean updateEmployee(EmployeeDTO dto) {
 
         Optional<EmployeeEntity> byId = employeeRepository.findById(dto.getEmployeeId());
-        if (!byId.isPresent()) throw new EmployeeException("Employee not found");
+        if(!byId.isPresent()) throw new EmployeeException("Employee not found");
 
         EmployeeEntity employeeEntity = byId.get();
 
-        if (!employeeEntity.getNic().equals(dto.getNic())) {
+        if(!employeeEntity.getNic().equals(dto.getNic())) {
             Optional<EmployeeEntity> byNic = employeeRepository.findByNic(dto.getNic());
-            if (byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
+            if(byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
         }
 
-        if (!employeeEntity.getMobile().equals(dto.getMobile())) {
+        if(!employeeEntity.getMobile().equals(dto.getMobile())) {
             Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(dto.getMobile());
-            if (byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
+            if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
         }
 
-        if (!employeeEntity.getEmail().equals(dto.getEmail())) {
+        if(!employeeEntity.getEmail().equals(dto.getEmail())) {
             Optional<EmployeeEntity> byEmail = employeeRepository.findByEmail(dto.getEmail());
             if (byEmail.isPresent()) throw new EmployeeException("Already exist an employee with this Email");
         }
@@ -91,6 +100,21 @@ public class EmployeeServiceImpl implements EmployeeService {
             Pageable pageable = PageRequest.of(index, size);
             Page<EmployeeEntity> allEmployee = employeeRepository.getAllEmployee(word, pageable);
             return allEmployee.map(this::mapEmployeeEntityToEmployeeDTO);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public List<String> getEmployee() {
+        List<String> searchableEmployeeList = new ArrayList<>();
+        try {
+            List<EmployeeEntity> allEmployee = employeeRepository.getAllEmployeeForSearch(EmployeeStatus.ACTIVE);
+            for (EmployeeEntity e : allEmployee) {
+                EmployeeSearchableResponseDTO dto = new EmployeeSearchableResponseDTO(e.getId(), e.getFirstName(), e.getLastName(), e.getNic(), e.getEmail(), e.getMobile(), e.getDesignation(), e.getFirstName() + " " + e.getLastName() + " - " + e.getMobile());
+                searchableEmployeeList.add(dto.customToString());
+            }
+            return searchableEmployeeList;
         } catch (Exception e) {
             throw e;
         }

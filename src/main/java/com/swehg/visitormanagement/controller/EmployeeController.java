@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author hp
  */
@@ -41,6 +43,12 @@ public class EmployeeController {
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllEmployee(@RequestParam("word") String word, @RequestParam("index") int index, @RequestParam("size") int size) {
         Page<EmployeeDTO> result = employeeService.getAllEmployee(word, index, size);
+        return new ResponseEntity(new CommonResponseDTO(true, "Employee records found successfully", result), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/search/all/active", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAllActiveEmployeeForSearch() {
+        List<String> result = employeeService.getEmployee();
         return new ResponseEntity(new CommonResponseDTO(true, "Employee records found successfully", result), HttpStatus.OK);
     }
 
