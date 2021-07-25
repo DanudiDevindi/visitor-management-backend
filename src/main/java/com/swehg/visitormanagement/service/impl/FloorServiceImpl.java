@@ -8,6 +8,7 @@ import com.swehg.visitormanagement.entity.FloorEntity;
 import com.swehg.visitormanagement.enums.BuildingStatus;
 import com.swehg.visitormanagement.enums.FloorStatus;
 import com.swehg.visitormanagement.exception.FloorException;
+import com.swehg.visitormanagement.exception.VisitorException;
 import com.swehg.visitormanagement.repository.BuildingRepository;
 import com.swehg.visitormanagement.repository.FloorRepository;
 import com.swehg.visitormanagement.service.FloorService;
@@ -101,6 +102,27 @@ public class FloorServiceImpl implements FloorService {
             List<FloorEntity> allByFloorStatus = floorRepository.findAllByFloorStatus(FloorStatus.ACTIVE);
             List<FloorDTO> activeFloorDTOList = new ArrayList<>();
             for (FloorEntity f : allByFloorStatus) {
+                activeFloorDTOList.add(new FloorDTO(f.getId(),
+                        f.getName(),
+                        new BuildingDTO(f.getBuildingEntity().getId(),
+                                f.getBuildingEntity().getName(),
+                                f.getBuildingEntity().getBuildingStatus()),
+                        f.getFloorStatus()));
+            }
+            return activeFloorDTOList;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public List<FloorDTO> getActiveFloorBuildingId(long id) {
+        List<FloorDTO> activeFloorDTOList = new ArrayList<>();
+        try {
+            Optional<BuildingEntity> byId = buildingRepository.findById(id);
+            if(!byId.isPresent()) throw new VisitorException("Building not found");
+            List<FloorEntity> activeByBuildingEntityAndStatus = floorRepository.getActiveByBuildingEntityAndStatus(byId.get(), FloorStatus.ACTIVE);
+            for (FloorEntity f : activeByBuildingEntityAndStatus) {
                 activeFloorDTOList.add(new FloorDTO(f.getId(),
                         f.getName(),
                         new BuildingDTO(f.getBuildingEntity().getId(),

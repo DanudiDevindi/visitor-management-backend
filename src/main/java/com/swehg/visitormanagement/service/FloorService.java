@@ -11,4 +11,5 @@ public interface FloorService {
     boolean deleteFloor(long id);
     List<FloorDTO> getAllFloor();
     List<FloorDTO> getActiveFloor();
+    List<FloorDTO> getActiveFloorBuildingId(long id);
 }
