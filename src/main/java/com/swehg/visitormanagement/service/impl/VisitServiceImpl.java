@@ -79,9 +79,14 @@ public class VisitServiceImpl implements VisitService {
                 if(c.getVisitorId()!=0) {
                     Optional<VisitorEntity> visitorById = visitorRepository.findById(c.getVisitorId());
                     if(!employeeById.isPresent()) throw new VisitException("Visitor not found");
-                    visitorEntity = visitorById.get();
+                    visitorEntity = checkVisitorDataForUpdate(visitorById.get(), c);
                 } else {
-                    visitorEntity = visitorRepository.save(new VisitorEntity(c.getVisitorFirstName(), c.getVisitorLastName(), c.getMobile(), c.getNic(), c.getEmail(), new Date()));
+                    Optional<VisitorEntity> visitorById = visitorRepository.findById(c.getVisitorId());
+                    if(employeeById.isPresent()) {
+                        visitorEntity = checkVisitorDataForUpdate(visitorById.get(), c);
+                    } else {
+                        visitorEntity = visitorRepository.save(new VisitorEntity(c.getVisitorFirstName(), c.getVisitorLastName(), c.getMobile(), c.getNic(), c.getEmail(), new Date()));
+                    }
                 }
 
                 Optional<PassCardEntity> passCardById = passCardRepository.findById(c.getPassCardId());
@@ -233,6 +238,27 @@ public class VisitServiceImpl implements VisitService {
                 )
         );
 
+    }
+
+
+    private VisitorEntity checkVisitorDataForUpdate(VisitorEntity v, CheckInVisitorDTO c) {
+        if(!v.getFirstName().equals(c.getVisitorFirstName())) {
+            v.setFirstName(c.getVisitorFirstName());
+        }
+
+        if(!v.getLastName().equals(c.getVisitorLastName())) {
+            v.setLastName(c.getVisitorLastName());
+        }
+
+        if(!v.getMobile().equals(c.getMobile())) {
+            v.setMobile(c.getMobile());
+        }
+
+        if(!v.getEmail().equals(c.getEmail())) {
+            v.setEmail(c.getEmail());
+        }
+
+        return v;
     }
 
 
