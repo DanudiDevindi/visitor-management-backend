@@ -6,6 +6,7 @@ import com.swehg.visitormanagement.enums.PassCardStatus;
 import com.swehg.visitormanagement.exception.VisitorException;
 import com.swehg.visitormanagement.repository.PassCardRepository;
 import com.swehg.visitormanagement.service.PassCardService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.Optional;
  */
 
 @Service
+@Log4j2
 public class PassCardServiceImpl implements PassCardService {
 
     private final PassCardRepository passCardRepository;
@@ -29,6 +31,7 @@ public class PassCardServiceImpl implements PassCardService {
 
     @Override
     public boolean addPassCard(PassCardDTO dto) {
+        log.info("Execute addPassCard: dto: " + dto);
         try {
             Optional<PassCardEntity> byName = passCardRepository.findByName(dto.getName());
             if(byName.isPresent()) throw new VisitorException("Pass card already existing with this name - " +
@@ -36,12 +39,14 @@ public class PassCardServiceImpl implements PassCardService {
             passCardRepository.save(new PassCardEntity(dto.getName(), PassCardStatus.ACTIVE));
             return true;
         } catch (Exception e) {
+            log.error("Execute addPassCard: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public boolean updatePassCard(PassCardDTO dto) {
+        log.info("Execute updatePassCard: dto: " + dto);
         try {
             Optional<PassCardEntity> byId = passCardRepository.findById(dto.getPassCardId());
             if(!byId.isPresent()) throw new VisitorException("Pass card not found");
@@ -56,12 +61,14 @@ public class PassCardServiceImpl implements PassCardService {
             passCardRepository.save(passCardEntity);
             return true;
         } catch (Exception e) {
+            log.error("Execute updatePassCard: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public List<PassCardDTO> getAllPassCard() {
+        log.info("Execute getAllPassCard:");
         List<PassCardDTO> allList = new ArrayList<>();
         try {
             List<PassCardEntity> all = passCardRepository.findAll();
@@ -70,12 +77,14 @@ public class PassCardServiceImpl implements PassCardService {
             }
             return allList;
         } catch (Exception e) {
+            log.error("Execute getAllPassCard: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public List<PassCardDTO> getActivePassCard() {
+        log.info("Execute getActivePassCard:");
         List<PassCardDTO> allActiveList = new ArrayList<>();
         try {
             List<PassCardEntity> all = passCardRepository.findAllByStatus(PassCardStatus.ACTIVE);
@@ -84,18 +93,21 @@ public class PassCardServiceImpl implements PassCardService {
             }
             return allActiveList;
         } catch (Exception e) {
+            log.error("Execute getActivePassCard: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public boolean deletePassCard(long id) {
+        log.info("Execute deletePassCard: id: " + id);
         try {
             Optional<PassCardEntity> byId = passCardRepository.findById(id);
             if(!byId.isPresent()) throw new VisitorException("Pass card not found");
             passCardRepository.delete(byId.get());
             return true;
         } catch (Exception e) {
+            log.error("Execute loadUserByUsername: " + e.getMessage());
             throw e;
         }
     }

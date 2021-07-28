@@ -9,6 +9,7 @@ import com.swehg.visitormanagement.exception.UserException;
 import com.swehg.visitormanagement.repository.UserRepository;
 import com.swehg.visitormanagement.service.UserService;
 import com.swehg.visitormanagement.util.EmailSender;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -37,10 +39,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean addUser(UserAllDetailDTO dto) {
+        log.info("Execute addUser: dto: " + dto);
         try {
 
             Optional<UserEntity> byNic = userRepository.findByNic(dto.getNic());
             if(byNic.isPresent()) throw new UserException("This employee already have an account");
+            Optional<UserEntity> byEmail = userRepository.findByEmail(dto.getEmail());
+            if(byEmail.isPresent()) throw new UserException("Another account already exist with this email");
             Optional<UserEntity> byUsername = userRepository.findByUsername(dto.getUserName());
             if(byUsername.isPresent()) throw new UserException("This username already exist");
             userRepository.save(new UserEntity(dto.getUserId(),
@@ -57,19 +62,30 @@ public class UserServiceImpl implements UserService {
                     ));
             return true;
         } catch (Exception e) {
+            log.error("Execute addUser: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public boolean updateUser(UserAllDetailDTO dto) {
+        log.info("Execute updateUser: dto: " + dto);
         try {
             Optional<UserEntity> userById = userRepository.findById(dto.getUserId());
             if(!userById.isPresent()) throw new UserException("Receptionist account not found");
             UserEntity userEntity = userById.get();
             if(!userEntity.getUsername().equals(dto.getUserName())) {
                 Optional<UserEntity> byUsername = userRepository.findByUsername(dto.getUserName());
-                if(!byUsername.isPresent()) throw new UserException("This username already exist");
+                if(byUsername.isPresent()) throw new UserException("This username already exist");
+            }
+            if(!userEntity.getNic().equals(dto.getNic())){
+                Optional<UserEntity> byNic = userRepository.findByNic(dto.getNic());
+                if(byNic.isPresent()) throw new UserException("Another account already exist with this NIC");
+            }
+
+            if(!userEntity.getEmail().equals(dto.getEmail())){
+                Optional<UserEntity> byEmail = userRepository.findByEmail(dto.getEmail());
+                if(byEmail.isPresent()) throw new UserException("Another account already exist with this email");
             }
             userEntity.setUsername(dto.getUserName());
             userEntity.setFirstName(dto.getFirstName());
@@ -87,11 +103,13 @@ public class UserServiceImpl implements UserService {
 
             return true;
         } catch (Exception e) {
+            log.error("Execute updateUser: " + e.getMessage());
             throw e;
         }
     }
 
     public UserDTO getUserDetailsByUsername(String username) {
+        log.info("Execute getUserDetailsByUsername: username: " + username);
         try {
 
             Optional<UserEntity> byUsername = userRepository.findByUsername(username);
@@ -101,12 +119,14 @@ public class UserServiceImpl implements UserService {
             return modelMapper.map(userEntity, UserDTO.class);
 
         } catch (Exception e) {
+            log.error("Execute getUserDetailsByUsername: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public List<UserAllDetailDTO> getAllUser(String word) {
+        log.info("Execute getAllUser: word: " + word);
         try {
 
             List<UserEntity> allUsersExceptStatus = userRepository.getAllUsersExceptStatus(
@@ -130,6 +150,7 @@ public class UserServiceImpl implements UserService {
             return all;
 
         } catch (Exception e) {
+            log.error("Execute getAllUser: " + e.getMessage());
             throw e;
         }
     }

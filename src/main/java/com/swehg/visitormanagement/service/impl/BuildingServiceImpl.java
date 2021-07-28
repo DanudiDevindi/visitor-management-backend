@@ -8,6 +8,7 @@ import com.swehg.visitormanagement.exception.BuildingException;
 import com.swehg.visitormanagement.repository.BuildingRepository;
 import com.swehg.visitormanagement.repository.FloorRepository;
 import com.swehg.visitormanagement.service.BuildingService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class BuildingServiceImpl implements BuildingService {
 
@@ -32,12 +34,14 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public boolean addBuilding(BuildingDTO dto) {
+        log.info("Execute addBuilding: dto: " + dto);
         try {
 
             buildingRepository.save(new BuildingEntity(dto.getName(), BuildingStatus.ACTIVE));
             return true;
 
         } catch (Exception e) {
+            log.error("Execute addBuilding: " + e.getMessage());
             throw e;
         }
     }
@@ -45,6 +49,7 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public boolean deleteBuilding(long id) {
+        log.info("Execute deleteBuilding: id: " + id);
         try {
 
             Optional<BuildingEntity> buildingById = buildingRepository.findById(id);
@@ -56,6 +61,7 @@ public class BuildingServiceImpl implements BuildingService {
             return true;
 
         } catch (Exception e) {
+            log.error("Execute deleteBuilding: " + e.getMessage());
             throw e;
         }
     }
@@ -63,6 +69,7 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public boolean updateBuilding(BuildingDTO dto) {
+        log.info("Execute updateBuilding: dto: " + dto);
         try {
 
             Optional<BuildingEntity> buildingById = buildingRepository.findById(dto.getBuildingId());
@@ -80,12 +87,14 @@ public class BuildingServiceImpl implements BuildingService {
             return true;
 
         } catch (Exception e) {
+            log.error("Execute updateBuilding: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public List<BuildingDTO> getAllBuildings() {
+        log.info("Execute getAllBuildings:");
         try {
 
             List<BuildingEntity> all = buildingRepository.getAllByExceptBuildingStatus(BuildingStatus.DELETED);
@@ -96,12 +105,14 @@ public class BuildingServiceImpl implements BuildingService {
             return buildingList;
 
         } catch (Exception e) {
+            log.error("Execute getAllBuildings: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public List<BuildingDTO> getAllActiveBuildings() {
+        log.info("Execute getAllBuildings:");
         try {
 
             List<BuildingEntity> all = buildingRepository.findAllByBuildingStatus(BuildingStatus.ACTIVE);
@@ -112,6 +123,7 @@ public class BuildingServiceImpl implements BuildingService {
             return buildingList;
 
         } catch (Exception e) {
+            log.error("Execute getAllBuildings: " + e.getMessage());
             throw e;
         }
     }

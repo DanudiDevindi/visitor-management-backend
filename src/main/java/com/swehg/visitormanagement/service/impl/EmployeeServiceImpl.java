@@ -10,6 +10,7 @@ import com.swehg.visitormanagement.exception.EmployeeException;
 import com.swehg.visitormanagement.repository.EmployeeRepository;
 import com.swehg.visitormanagement.service.EmployeeService;
 import jdk.nashorn.internal.runtime.options.Option;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
@@ -32,6 +34,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public boolean addEmployee(EmployeeDTO dto) {
+        log.info("Execute addEmployee: dto: " + dto);
         try {
             Optional<EmployeeEntity> byNic = employeeRepository.findByNic(dto.getNic());
             Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(dto.getMobile());
@@ -56,13 +59,15 @@ public class EmployeeServiceImpl implements EmployeeService {
             return true;
 
         } catch (Exception e) {
+            log.error("Execute addEmployee: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public boolean updateEmployee(EmployeeDTO dto) {
-
+        log.info("Execute updateEmployee: dto: " + dto);
+        try {
         Optional<EmployeeEntity> byId = employeeRepository.findById(dto.getEmployeeId());
         if(!byId.isPresent()) throw new EmployeeException("Employee not found");
 
@@ -92,21 +97,28 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeRepository.save(employeeEntity);
         return true;
+        } catch (Exception e) {
+            log.error("Execute updateEmployee: " + e.getMessage());
+            throw e;
+        }
     }
 
     @Override
     public Page<EmployeeDTO> getAllEmployee(String word, int index, int size) {
+        log.info("Execute getAllEmployee: word: " + word + ", index: " + index + ", size: " + size);
         try {
             Pageable pageable = PageRequest.of(index, size);
             Page<EmployeeEntity> allEmployee = employeeRepository.getAllEmployee(word, pageable);
             return allEmployee.map(this::mapEmployeeEntityToEmployeeDTO);
         } catch (Exception e) {
+            log.error("Execute getAllEmployee: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public List<String> getEmployee() {
+        log.info("Execute getEmployee:");
         List<String> searchableEmployeeList = new ArrayList<>();
         try {
             List<EmployeeEntity> allEmployee = employeeRepository.getAllEmployeeForSearch(EmployeeStatus.ACTIVE);
@@ -116,6 +128,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
             return searchableEmployeeList;
         } catch (Exception e) {
+            log.error("Execute getEmployee: " + e.getMessage());
             throw e;
         }
     }

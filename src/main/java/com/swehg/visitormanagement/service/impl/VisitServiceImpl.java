@@ -13,6 +13,7 @@ import com.swehg.visitormanagement.util.DateGenerator;
 import com.swehg.visitormanagement.util.EmailSender;
 import com.swehg.visitormanagement.util.EmailTemplateGen;
 import com.swehg.visitormanagement.util.TokenValidator;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
+@Log4j2
 public class VisitServiceImpl implements VisitService {
 
     private final EmployeeRepository employeeRepository;
@@ -58,6 +60,7 @@ public class VisitServiceImpl implements VisitService {
      */
     @Override
     public boolean checkIn(CheckInRequestDTO dto) {
+        log.info("Execute checkIn: dto: " + dto);
         try {
 
             JwtTokenDTO jwtTokenDTO = tokenValidator.retrieveCurrentUserInformationFromToken();
@@ -102,12 +105,14 @@ public class VisitServiceImpl implements VisitService {
             return true;
 
         } catch (Exception e) {
+            log.error("Execute checkIn: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public boolean checkOut(long visitId) {
+        log.info("Execute checkOut: visitId: " + visitId);
         try {
 
             JwtTokenDTO jwtTokenDTO = tokenValidator.retrieveCurrentUserInformationFromToken();
@@ -135,34 +140,40 @@ public class VisitServiceImpl implements VisitService {
             return true;
 
         } catch (Exception e) {
+            log.error("Execute checkOut: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public Page<CommonVisitResponseDTO> getAllNotCheckOut(String word, int index, int size) {
+        log.info("Execute getAllNotCheckOut: word: " + word + ", index: " + index + ", size: " + size);
         try {
             Pageable pageable = PageRequest.of(index, size);
             Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllNotCheckOutByDateRange(word, dateGenerator.setTime(8, 30, 0, 0), dateGenerator.setTime(18, 00, 0, 0), pageable);
             return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
         } catch (Exception e) {
+            log.error("Execute getAllNotCheckOut: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public Page<CommonVisitResponseDTO> getAllOverdueCheckin(String word, int index, int size) {
+        log.info("Execute getAllOverdueCheckin: word: " + word + ", index: " + index + ", size: " + size);
         try {
             Pageable pageable = PageRequest.of(index, size);
             Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllOverdueCheckinByDateRange(word, new Date(), dateGenerator.setTime(18, 00, 0, 0), pageable);
             return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
         } catch (Exception e) {
+            log.error("Execute getAllOverdueCheckin: " + e.getMessage());
             throw e;
         }
     }
 
     @Override
     public Page<CommonVisitResponseDTO> getHistory(HistorySearchTypes type, String word, Date startDate, Date endDate, int index, int size) {
+        log.info("Execute getHistory: type: " + type + ", word: " + word +", startDate: " + startDate + ", endDate: " + endDate +", index: " + index + ", size: " + size);
         try {
 
             Pageable pageable = PageRequest.of(index, size);
@@ -184,6 +195,7 @@ public class VisitServiceImpl implements VisitService {
             return allVisitHistory.map(this::mapVisitEntityToCommonVisitResponseDTO);
 
         } catch (Exception e) {
+            log.error("Execute getHistory: " + e.getMessage());
             throw e;
         }
     }
