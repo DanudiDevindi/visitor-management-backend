@@ -3,6 +3,7 @@ package com.swehg.visitormanagement.service.impl;
 import com.swehg.visitormanagement.dto.*;
 import com.swehg.visitormanagement.dto.request.CheckInRequestDTO;
 import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
+import com.swehg.visitormanagement.dto.response.CommonVisitResponseForTableDTO;
 import com.swehg.visitormanagement.entity.*;
 import com.swehg.visitormanagement.enums.HistorySearchTypes;
 import com.swehg.visitormanagement.enums.PassCardStatus;
@@ -84,12 +85,9 @@ public class VisitServiceImpl implements VisitService {
                     if(!employeeById.isPresent()) throw new VisitException("Visitor not found");
                     visitorEntity = checkVisitorDataForUpdate(visitorById.get(), c);
                 } else {
-                    Optional<VisitorEntity> visitorById = visitorRepository.findById(c.getVisitorId());
-                    if(employeeById.isPresent()) {
-                        visitorEntity = checkVisitorDataForUpdate(visitorById.get(), c);
-                    } else {
+                    System.out.println("H1");
+
                         visitorEntity = visitorRepository.save(new VisitorEntity(c.getVisitorFirstName(), c.getVisitorLastName(), c.getMobile(), c.getNic(), c.getEmail(), new Date()));
-                    }
                 }
 
                 Optional<PassCardEntity> passCardById = passCardRepository.findById(c.getPassCardId());
@@ -146,12 +144,12 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public Page<CommonVisitResponseDTO> getAllNotCheckOut(String word, int index, int size) {
+    public Page<CommonVisitResponseForTableDTO> getAllNotCheckOut(String word, int index, int size) {
         log.info("Execute getAllNotCheckOut: word: " + word + ", index: " + index + ", size: " + size);
         try {
             Pageable pageable = PageRequest.of(index, size);
             Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllNotCheckOutByDateRange(word, dateGenerator.setTime(8, 30, 0, 0), dateGenerator.setTime(18, 00, 0, 0), pageable);
-            return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
+            return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO2);
         } catch (Exception e) {
             log.error("Execute getAllNotCheckOut: " + e.getMessage());
             throw e;
@@ -200,10 +198,26 @@ public class VisitServiceImpl implements VisitService {
         }
     }
 
+    private CommonVisitResponseForTableDTO mapVisitEntityToCommonVisitResponseDTO2(VisitEntity v) {
+
+        return new CommonVisitResponseForTableDTO(
+                v.getId(),
+                v.getPassCardEntity().getName(),
+                v.getCheckinTime(),
+                v.getVisitorEntity().getNic(),
+                v.getVisitorEntity().getFirstName(),
+                v.getVisitorEntity().getLastName(),
+                v.getVisitorEntity().getMobile(),
+                v.getVisitorEntity().getEmail(),
+                v.getEmployeeEntity().getFirstName() + " " +  v.getEmployeeEntity().getLastName()
+        );
+
+    }
+
     private CommonVisitResponseDTO mapVisitEntityToCommonVisitResponseDTO(VisitEntity v) {
 
         return new CommonVisitResponseDTO(
-            v.getId(),
+                v.getId(),
                 new VisitorDTO(v.getVisitorEntity().getId(),
                         v.getVisitorEntity().getFirstName(),
                         v.getVisitorEntity().getLastName(),

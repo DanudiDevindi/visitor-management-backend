@@ -3,6 +3,7 @@ package com.swehg.visitormanagement.controller;
 import com.swehg.visitormanagement.dto.request.CheckInRequestDTO;
 import com.swehg.visitormanagement.dto.response.CommonResponseDTO;
 import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
+import com.swehg.visitormanagement.dto.response.CommonVisitResponseForTableDTO;
 import com.swehg.visitormanagement.enums.HistorySearchTypes;
 import com.swehg.visitormanagement.service.VisitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class CheckInController {
 
     @GetMapping(value = "/checked", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity checkOut(@RequestParam("word") String word, @RequestParam("index") int index, @RequestParam("size") int size) {
-        Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getAllNotCheckOut(word, index, size);
+        Page<CommonVisitResponseForTableDTO> allNotCheckOut = visitService.getAllNotCheckOut(word, index, size);
         return new ResponseEntity(new CommonResponseDTO(true, "Checked in records found successfully", allNotCheckOut), HttpStatus.OK);
     }
 
