@@ -123,6 +123,9 @@ public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter {
                 .antMatchers("/v1/visitor/filter")
                 .access("hasAnyRole('ROLE_ADMIN')")
 
+                .antMatchers("/v1/dashboard/data")
+                .access("hasAnyRole('ROLE_ADMIN')")
+
                 .antMatchers("/v1/**").permitAll()
                 .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
     }
