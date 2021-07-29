@@ -2,6 +2,7 @@ package com.swehg.visitormanagement.controller;
 
 import com.swehg.visitormanagement.dto.EmployeeDTO;
 import com.swehg.visitormanagement.dto.response.CommonResponseDTO;
+import com.swehg.visitormanagement.dto.response.EmployeeSearchableResponseDTO;
 import com.swehg.visitormanagement.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequestMapping("v1/employee")
 public class EmployeeController {
 
+    @Autowired
     private final EmployeeService employeeService;
 
     @Autowired
@@ -48,7 +50,9 @@ public class EmployeeController {
 
     @GetMapping(value = "/search/all/active", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllActiveEmployeeForSearch() {
-        List<String> result = employeeService.getEmployee();
+        List<EmployeeSearchableResponseDTO> result = employeeService.getEmployee();
         return new ResponseEntity(new CommonResponseDTO(true, "Employee records found successfully", result), HttpStatus.OK);
     }
+
+
 }

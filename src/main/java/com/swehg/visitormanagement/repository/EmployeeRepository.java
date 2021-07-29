@@ -2,7 +2,6 @@ package com.swehg.visitormanagement.repository;
 
 import com.swehg.visitormanagement.entity.EmployeeEntity;
 import com.swehg.visitormanagement.enums.EmployeeStatus;
-import jdk.nashorn.internal.runtime.options.Option;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

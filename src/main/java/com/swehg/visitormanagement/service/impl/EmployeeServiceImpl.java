@@ -25,6 +25,7 @@ import java.util.Optional;
 @Log4j2
 public class EmployeeServiceImpl implements EmployeeService {
 
+
     private final EmployeeRepository employeeRepository;
 
     @Autowired
@@ -118,6 +119,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<EmployeeSearchableResponseDTO> getEmployee() {
+        List<EmployeeSearchableResponseDTO> searchableEmployeeList = new ArrayList<>();
     public List<String> getEmployee() {
         log.info("Execute getEmployee:");
         List<String> searchableEmployeeList = new ArrayList<>();
@@ -125,7 +128,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             List<EmployeeEntity> allEmployee = employeeRepository.getAllEmployeeForSearch(EmployeeStatus.ACTIVE);
             for (EmployeeEntity e : allEmployee) {
                 EmployeeSearchableResponseDTO dto = new EmployeeSearchableResponseDTO(e.getId(), e.getFirstName(), e.getLastName(), e.getNic(), e.getEmail(), e.getMobile(), e.getDesignation(), e.getFirstName() + " " + e.getLastName() + " - " + e.getMobile());
-                searchableEmployeeList.add(dto.customToString());
+                searchableEmployeeList.add(dto);
             }
             return searchableEmployeeList;
         } catch (Exception e) {
