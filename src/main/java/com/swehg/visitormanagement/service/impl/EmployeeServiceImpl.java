@@ -1,15 +1,13 @@
 package com.swehg.visitormanagement.service.impl;
 
 import com.swehg.visitormanagement.dto.*;
-import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
 import com.swehg.visitormanagement.dto.response.EmployeeSearchableResponseDTO;
 import com.swehg.visitormanagement.entity.EmployeeEntity;
-import com.swehg.visitormanagement.entity.VisitEntity;
 import com.swehg.visitormanagement.enums.EmployeeStatus;
 import com.swehg.visitormanagement.exception.EmployeeException;
 import com.swehg.visitormanagement.repository.EmployeeRepository;
 import com.swehg.visitormanagement.service.EmployeeService;
-import jdk.nashorn.internal.runtime.options.Option;
+import com.swehg.visitormanagement.util.MobileValidator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,21 +25,27 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     private final EmployeeRepository employeeRepository;
+    private final MobileValidator mobileValidator;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, MobileValidator mobileValidator) {
         this.employeeRepository = employeeRepository;
+        this.mobileValidator = mobileValidator;
     }
 
     @Override
     public boolean addEmployee(EmployeeDTO dto) {
         log.info("Execute addEmployee: dto: " + dto);
         try {
+
+            String mobileStandardFormat = mobileValidator.getMobileStandardFormat(dto.getMobile());
+
             Optional<EmployeeEntity> byNic = employeeRepository.findByNic(dto.getNic());
-            Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(dto.getMobile());
+            if(mobileStandardFormat==null) throw new EmployeeException("Invalid employee mobile number");
+            Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(mobileStandardFormat);
             Optional<EmployeeEntity> byEmail = employeeRepository.findByEmail(dto.getEmail());
 
-            System.out.println(byNic.isPresent());
+            System.out.println(mobileStandardFormat);
 
             if(byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
             if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
@@ -51,7 +55,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     dto.getFirstName(),
                     dto.getLastName(),
                     dto.getNic(),
-                    dto.getMobile(),
+                    mobileStandardFormat,
                     dto.getEmail(),
                     dto.getDesignation(),
                     EmployeeStatus.ACTIVE
@@ -79,8 +83,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             if(byNic.isPresent()) throw new EmployeeException("Already exist an employee with this NIC");
         }
 
-        if(!employeeEntity.getMobile().equals(dto.getMobile())) {
-            Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(dto.getMobile());
+        String mobileStandardFormat = mobileValidator.getMobileStandardFormat(dto.getMobile());
+
+        if(mobileStandardFormat==null) throw new EmployeeException("Invalid employee mobile number");
+        
+        if(!employeeEntity.getMobile().equals(mobileStandardFormat)) {
+            Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(mobileStandardFormat);
             if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
         }
 
@@ -92,7 +100,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeEntity.setFirstName(dto.getFirstName());
         employeeEntity.setLastName(dto.getLastName());
         employeeEntity.setNic(dto.getNic());
-        employeeEntity.setMobile(dto.getMobile());
+        employeeEntity.setMobile(mobileStandardFormat);
         employeeEntity.setEmail(dto.getEmail());
         employeeEntity.setDesignation(dto.getDesignation());
         employeeEntity.setStatus(EmployeeStatus.ACTIVE);
