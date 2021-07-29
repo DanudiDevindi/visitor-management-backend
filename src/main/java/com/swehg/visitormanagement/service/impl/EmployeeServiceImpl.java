@@ -86,7 +86,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         String mobileStandardFormat = mobileValidator.getMobileStandardFormat(dto.getMobile());
 
         if(mobileStandardFormat==null) throw new EmployeeException("Invalid employee mobile number");
-        
+
         if(!employeeEntity.getMobile().equals(mobileStandardFormat)) {
             Optional<EmployeeEntity> byMobile = employeeRepository.findByMobile(mobileStandardFormat);
             if(byMobile.isPresent()) throw new EmployeeException("Already exist an employee with this Mobile Number");
