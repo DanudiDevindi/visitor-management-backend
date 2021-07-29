@@ -94,6 +94,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeEntity.setMobile(dto.getMobile());
         employeeEntity.setEmail(dto.getEmail());
         employeeEntity.setDesignation(dto.getDesignation());
+        employeeEntity.setStatus(EmployeeStatus.ACTIVE);
 
         employeeRepository.save(employeeEntity);
         return true;
