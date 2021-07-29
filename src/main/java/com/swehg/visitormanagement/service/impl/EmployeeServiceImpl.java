@@ -121,9 +121,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeSearchableResponseDTO> getEmployee() {
         List<EmployeeSearchableResponseDTO> searchableEmployeeList = new ArrayList<>();
-    public List<String> getEmployee() {
         log.info("Execute getEmployee:");
-        List<String> searchableEmployeeList = new ArrayList<>();
         try {
             List<EmployeeEntity> allEmployee = employeeRepository.getAllEmployeeForSearch(EmployeeStatus.ACTIVE);
             for (EmployeeEntity e : allEmployee) {
