@@ -55,7 +55,7 @@ public class BuildingServiceImpl implements BuildingService {
             Optional<BuildingEntity> buildingById = buildingRepository.findById(id);
             if(!buildingById.isPresent()) throw new BuildingException("Building not found");
             BuildingEntity buildingEntity = buildingById.get();
-            floorRepository.updateFloorStatusByBuilding(FloorStatus.DELETED, buildingEntity.getId());
+            floorRepository.updateFloorStatusByBuilding(FloorStatus.DELETED.toString(), buildingEntity.getId());
 
             BuildingStatus deleted = BuildingStatus.DELETED;
 
@@ -84,7 +84,7 @@ public class BuildingServiceImpl implements BuildingService {
             buildingEntity.setBuildingStatus(dto.getStatus());
 
             if(dto.getStatus().equals(BuildingStatus.INACTIVE)) {
-                floorRepository.updateFloorStatusByBuilding(FloorStatus.INACTIVE, buildingEntity.getId());
+                floorRepository.updateFloorStatusByBuilding(FloorStatus.INACTIVE.toString(), buildingEntity.getId());
             }
 
             buildingRepository.save(buildingEntity);
