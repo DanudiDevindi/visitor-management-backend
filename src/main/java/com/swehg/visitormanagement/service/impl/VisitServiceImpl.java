@@ -152,7 +152,7 @@ public class VisitServiceImpl implements VisitService {
         log.info("Execute getAllNotCheckOut: word: " + word + ", index: " + index + ", size: " + size);
         try {
             Pageable pageable = PageRequest.of(index, size);
-            Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllNotCheckOutByDateRange(word, dateGenerator.setTime(8, 30, 0, 0), dateGenerator.setTime(18, 00, 0, 0), pageable);
+            Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllNotCheckOutByDateRange(word, dateGenerator.setTime(3, 00, 0, 0), dateGenerator.setTime(18, 29, 59, 0), pageable);
             return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
         } catch (Exception e) {
             log.error("Execute getAllNotCheckOut: " + e.getMessage());
@@ -187,8 +187,8 @@ public class VisitServiceImpl implements VisitService {
                 allVisitHistory = visitRepository.getVisitHistory(word, new Date(), pageable);
             } else {
 
-                Date sDate = formatter.parse(startDate + " 00:00:00");
-                Date eDate = formatter.parse(endDate + " 23:59:59");
+                Date sDate = dateGenerator.convertToLocalTime(formatter.parse(startDate + " 00:00:00"));
+                Date eDate = dateGenerator.convertToLocalTime(formatter.parse(endDate + " 23:59:59"));
 
                 if(type.equals(HistorySearchTypes.ALL)) {
                     allVisitHistory = visitRepository.getAllVisitHistory(word, sDate, eDate, pageable);
@@ -242,8 +242,8 @@ public class VisitServiceImpl implements VisitService {
                         v.getVisitorEntity().getEmail(),
                         v.getVisitorEntity().getCreatedDate()
                 ),
-                v.getCheckinTime(),
-                null,
+                dateGenerator.convertToLocalTime(v.getCheckinTime()),
+                v.getCheckoutTime()!=null?dateGenerator.convertToLocalTime(v.getCheckoutTime()):null,
                 v.getPurpose(),
                 new UserAllDetailDTO(v.getCheckInUserEntity().getId(),
                         null,

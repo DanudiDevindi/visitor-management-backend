@@ -26,4 +26,11 @@ public class DateGenerator {
         return d;
     }
 
+    public Date convertToLocalTime(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MINUTE, 360);
+        return calendar.getTime();
+    }
+
 }
