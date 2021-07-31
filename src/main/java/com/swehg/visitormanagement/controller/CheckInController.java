@@ -62,7 +62,7 @@ public class CheckInController {
     }
 
     @GetMapping(value = "/history", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getHistory(@RequestParam("type") HistorySearchTypes type, @RequestParam("word") String word, @RequestParam("startDate") Date startDate, @RequestParam("endDate") Date endDate, @RequestParam("index") int index, @RequestParam("size") int size) {
+    public ResponseEntity getHistory(@RequestParam("type") HistorySearchTypes type, @RequestParam("word") String word, @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate, @RequestParam("index") int index, @RequestParam("size") int size) {
         Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getHistory(type, word, startDate, endDate, index, size);
         return new ResponseEntity(new CommonResponseDTO(true, "Visit history records found successfully", allNotCheckOut), HttpStatus.OK);
     }

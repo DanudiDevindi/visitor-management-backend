@@ -18,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
@@ -172,28 +174,40 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public Page<CommonVisitResponseDTO> getHistory(HistorySearchTypes type, String word, Date startDate, Date endDate, int index, int size) {
+    public Page<CommonVisitResponseDTO> getHistory(HistorySearchTypes type, String word, String startDate, String endDate, int index, int size) {
         log.info("Execute getHistory: type: " + type + ", word: " + word +", startDate: " + startDate + ", endDate: " + endDate +", index: " + index + ", size: " + size);
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
 
             Pageable pageable = PageRequest.of(index, size);
 
             Page<VisitEntity> allVisitHistory =  null;
 
-            if(type.equals(HistorySearchTypes.ALL)) {
-                allVisitHistory = visitRepository.getAllVisitHistory(word, startDate, endDate, pageable);
-            }
+            if(startDate.equals("") || startDate==null || endDate.equals("") || endDate==null) {
+                allVisitHistory = visitRepository.getVisitHistory(word, new Date(), pageable);
+            } else {
 
-            if(type.equals(HistorySearchTypes.NOTCHECKOUT)) {
-                allVisitHistory = visitRepository.getAllNotCheckOutVisitHistory(word, startDate, endDate, pageable);
-            }
+                Date sDate = formatter.parse(startDate + " 00:00:00");
+                Date eDate = formatter.parse(endDate + " 23:59:59");
 
-            if(type.equals(HistorySearchTypes.CHECKOUT)) {
-                allVisitHistory = visitRepository.getAllCheckedOutVisitHistory(word, startDate, endDate, pageable);
+                if(type.equals(HistorySearchTypes.ALL)) {
+                    allVisitHistory = visitRepository.getAllVisitHistory(word, sDate, eDate, pageable);
+                }
+
+                if(type.equals(HistorySearchTypes.NOTCHECKOUT)) {
+                    allVisitHistory = visitRepository.getAllNotCheckOutVisitHistory(word, sDate, eDate, pageable);
+                }
+
+                if(type.equals(HistorySearchTypes.CHECKOUT)) {
+                    allVisitHistory = visitRepository.getAllCheckedOutVisitHistory(word, sDate, eDate,  pageable);
+                }
             }
 
             return allVisitHistory.map(this::mapVisitEntityToCommonVisitResponseDTO);
 
+        } catch (ParseException e) {
+            log.error("Execute getHistory: " + e.getMessage());
+            throw new VisitException("Something went wrong");
         } catch (Exception e) {
             log.error("Execute getHistory: " + e.getMessage());
             throw e;

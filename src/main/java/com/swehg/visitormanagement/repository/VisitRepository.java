@@ -23,6 +23,9 @@ public interface VisitRepository extends JpaRepository<VisitEntity, Long> {
     @Query("SELECT v FROM VisitEntity v WHERE (:startDate IS NULL OR v.checkinTime BETWEEN :startDate AND :endDate) AND (v.passCardEntity.name LIKE %:word% OR v.visitorEntity.nic LIKE %:word% OR v.visitorEntity.mobile LIKE %:word%)")
     Page<VisitEntity> getAllVisitHistory(@Param("word") String word, @Param("startDate") Date startDate, @Param("endDate") Date endDate, Pageable pageable);
 
+    @Query("SELECT v FROM VisitEntity v WHERE (:startDate IS NULL OR v.checkinTime < :startDate) AND (v.passCardEntity.name LIKE %:word% OR v.visitorEntity.nic LIKE %:word% OR v.visitorEntity.mobile LIKE %:word%)")
+    Page<VisitEntity> getVisitHistory(@Param("word") String word, @Param("startDate") Date startDate, Pageable pageable);
+
     @Query("SELECT v FROM VisitEntity v WHERE v.checkoutTime IS NULL AND (:startDate IS NULL OR v.checkinTime BETWEEN :startDate AND :endDate) AND (v.passCardEntity.name LIKE %:word% OR v.visitorEntity.nic LIKE %:word% OR v.visitorEntity.mobile LIKE %:word%)")
     Page<VisitEntity> getAllNotCheckOutVisitHistory(@Param("word") String word, @Param("startDate") Date startDate, @Param("endDate") Date endDate, Pageable pageable);
 

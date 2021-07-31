@@ -13,5 +13,5 @@ public interface VisitService {
     boolean checkOut(long visitId);
     Page<CommonVisitResponseForTableDTO> getAllNotCheckOut(String word, int index, int size);
     Page<CommonVisitResponseDTO> getAllOverdueCheckin(String word, int index, int size);
-    Page<CommonVisitResponseDTO> getHistory(HistorySearchTypes type, String word, Date startDate, Date endDate, int index, int size);
+    Page<CommonVisitResponseDTO> getHistory(HistorySearchTypes type, String word, String startDate, String endDate, int index, int size);
 }
