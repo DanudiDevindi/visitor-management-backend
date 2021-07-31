@@ -16,6 +16,8 @@ public interface FloorRepository extends JpaRepository<FloorEntity, Long> {
 
     List<FloorEntity> findAllByFloorStatus(FloorStatus floorStatus);
 
+    List<FloorEntity> findAllByBuildingEntity(BuildingEntity buildingEntity);
+
     @Modifying
     @Query(value = "UPDATE floor f SET f.floor_status=?1 WHERE f.building_id=?2", nativeQuery = true)
     int updateFloorStatusByBuilding(String floorStatus, long id);

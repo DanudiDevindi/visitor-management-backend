@@ -11,7 +11,7 @@ import java.util.Date;
 public interface VisitService {
     boolean checkIn(CheckInRequestDTO dto);
     boolean checkOut(long visitId);
-    Page<CommonVisitResponseForTableDTO> getAllNotCheckOut(String word, int index, int size);
+    Page<CommonVisitResponseDTO> getAllNotCheckOut(String word, int index, int size);
     Page<CommonVisitResponseDTO> getAllOverdueCheckin(String word, int index, int size);
     Page<CommonVisitResponseDTO> getHistory(HistorySearchTypes type, String word, String startDate, String endDate, int index, int size);
 }

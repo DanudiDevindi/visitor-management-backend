@@ -39,6 +39,14 @@ public class FloorServiceImpl implements FloorService {
         try {
             Optional<BuildingEntity> buildingById = buildingRepository.findById(dto.getBuildingId());
             if(!buildingById.isPresent()) throw new FloorException("Building not found");
+
+            List<FloorEntity> allByBuildingEntity = floorRepository.findAllByBuildingEntity(buildingById.get());
+            for (FloorEntity f : allByBuildingEntity) {
+                if(f.getName().equals(dto.getName())) {
+                    throw new FloorException("Another floor in this building exist with this floor name. Please try another name");
+                }
+            }
+
             floorRepository.save(new FloorEntity(dto.getName(), buildingById.get(), FloorStatus.ACTIVE));
             return true;
         } catch (Exception e) {
@@ -57,6 +65,16 @@ public class FloorServiceImpl implements FloorService {
             if(!buildingById.isPresent()) throw new FloorException("Building not found");
 
             FloorEntity floorEntity = floorById.get();
+
+            List<FloorEntity> allByBuildingEntity = floorRepository.findAllByBuildingEntity(buildingById.get());
+            for (FloorEntity f : allByBuildingEntity) {
+                if(f.getName().equals(dto.getName())) {
+                    if(f.getId()!=dto.getFloorId()) {
+                        throw new FloorException("Another floor in this building exist with this floor name. Please try another name");
+                    }
+                }
+            }
+
             floorEntity.setName(dto.getName());
             floorEntity.setBuildingEntity(buildingById.get());
             floorEntity.setFloorStatus(dto.getStatus());

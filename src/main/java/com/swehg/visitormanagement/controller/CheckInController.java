@@ -51,7 +51,7 @@ public class CheckInController {
 
     @GetMapping(value = "/checked", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity checkOut(@RequestParam("word") String word, @RequestParam("index") int index, @RequestParam("size") int size) {
-        Page<CommonVisitResponseForTableDTO> allNotCheckOut = visitService.getAllNotCheckOut(word, index, size);
+        Page<CommonVisitResponseDTO> allNotCheckOut = visitService.getAllNotCheckOut(word, index, size);
         return new ResponseEntity(new CommonResponseDTO(true, "Checked in records found successfully", allNotCheckOut), HttpStatus.OK);
     }
 

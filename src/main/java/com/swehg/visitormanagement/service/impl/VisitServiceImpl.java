@@ -148,12 +148,12 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public Page<CommonVisitResponseForTableDTO> getAllNotCheckOut(String word, int index, int size) {
+    public Page<CommonVisitResponseDTO> getAllNotCheckOut(String word, int index, int size) {
         log.info("Execute getAllNotCheckOut: word: " + word + ", index: " + index + ", size: " + size);
         try {
             Pageable pageable = PageRequest.of(index, size);
             Page<VisitEntity> allNotCheckOutByDateRange = visitRepository.getAllNotCheckOutByDateRange(word, dateGenerator.setTime(8, 30, 0, 0), dateGenerator.setTime(18, 00, 0, 0), pageable);
-            return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO2);
+            return allNotCheckOutByDateRange.map(this::mapVisitEntityToCommonVisitResponseDTO);
         } catch (Exception e) {
             log.error("Execute getAllNotCheckOut: " + e.getMessage());
             throw e;
