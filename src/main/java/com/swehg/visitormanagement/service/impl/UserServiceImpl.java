@@ -9,6 +9,7 @@ import com.swehg.visitormanagement.exception.UserException;
 import com.swehg.visitormanagement.repository.UserRepository;
 import com.swehg.visitormanagement.service.UserService;
 import com.swehg.visitormanagement.util.EmailSender;
+import com.swehg.visitormanagement.util.MobileValidator;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,15 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailSender emailSender;
+    private final MobileValidator mobileValidator;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder, EmailSender emailSender) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder, EmailSender emailSender, MobileValidator mobileValidator) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailSender = emailSender;
+        this.mobileValidator = mobileValidator;
     }
 
     @Override
@@ -44,6 +47,14 @@ public class UserServiceImpl implements UserService {
 
             Optional<UserEntity> byNic = userRepository.findByNic(dto.getNic());
             if(byNic.isPresent()) throw new UserException("This employee already have an account");
+
+            String mobileStandardFormat = mobileValidator.getMobileStandardFormat(dto.getMobile());
+
+            if(mobileStandardFormat==null) throw new UserException("Invalid mobile number");
+
+            Optional<UserEntity> byMobile = userRepository.findByMobile(mobileStandardFormat);
+            if(byMobile.isPresent()) throw new UserException("Another account already exist with this mobile number");
+
             Optional<UserEntity> byEmail = userRepository.findByEmail(dto.getEmail());
             if(byEmail.isPresent()) throw new UserException("Another account already exist with this email");
             Optional<UserEntity> byUsername = userRepository.findByUsername(dto.getUserName());
@@ -54,7 +65,7 @@ public class UserServiceImpl implements UserService {
                     dto.getLastName(),
                     dto.getNic(),
                     dto.getEmail(),
-                    dto.getMobile(),
+                    mobileStandardFormat,
                     bCryptPasswordEncoder.encode(dto.getPassword()),
                     new Date(),
                     UserRoles.RECEP,
@@ -83,6 +94,15 @@ public class UserServiceImpl implements UserService {
                 if(byNic.isPresent()) throw new UserException("Another account already exist with this NIC");
             }
 
+            String mobileStandardFormat = mobileValidator.getMobileStandardFormat(dto.getMobile());
+
+            if(mobileStandardFormat==null) throw new UserException("Invalid mobile number");
+
+            if(!userEntity.getMobile().equals(mobileStandardFormat)) {
+                Optional<UserEntity> byMobile = userRepository.findByMobile(mobileStandardFormat);
+                if(byMobile.isPresent()) throw new UserException("Another account already exist with this mobile number");
+            }
+
             if(!userEntity.getEmail().equals(dto.getEmail())){
                 Optional<UserEntity> byEmail = userRepository.findByEmail(dto.getEmail());
                 if(byEmail.isPresent()) throw new UserException("Another account already exist with this email");
@@ -92,6 +112,7 @@ public class UserServiceImpl implements UserService {
             userEntity.setLastName(dto.getLastName());
             userEntity.setNic(dto.getNic());
             userEntity.setEmail(dto.getEmail());
+            userEntity.setMobile(mobileStandardFormat);
 
             if(dto.getPassword()!=null) {
                 userEntity.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));

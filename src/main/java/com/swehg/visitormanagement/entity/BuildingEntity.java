@@ -17,7 +17,7 @@ public class BuildingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(unique = true)
+    @Column
     private String name;
     @Enumerated(EnumType.STRING)
     private BuildingStatus buildingStatus;

@@ -10,10 +10,7 @@ import com.swehg.visitormanagement.enums.PassCardStatus;
 import com.swehg.visitormanagement.exception.VisitException;
 import com.swehg.visitormanagement.repository.*;
 import com.swehg.visitormanagement.service.VisitService;
-import com.swehg.visitormanagement.util.DateGenerator;
-import com.swehg.visitormanagement.util.EmailSender;
-import com.swehg.visitormanagement.util.EmailTemplateGen;
-import com.swehg.visitormanagement.util.TokenValidator;
+import com.swehg.visitormanagement.util.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
@@ -38,9 +37,10 @@ public class VisitServiceImpl implements VisitService {
     private final DateGenerator dateGenerator;
     private final EmailTemplateGen emailTemplateGen;
     private final EmailSender emailSender;
+    private final MobileValidator mobileValidator;
 
     @Autowired
-    public VisitServiceImpl(EmployeeRepository employeeRepository, VisitorRepository visitorRepository, PassCardRepository passCardRepository, TokenValidator tokenValidator, UserRepository userRepository, VisitRepository visitRepository, FloorRepository floorRepository, DateGenerator dateGenerator, EmailTemplateGen emailTemplateGen, EmailSender emailSender) {
+    public VisitServiceImpl(EmployeeRepository employeeRepository, VisitorRepository visitorRepository, PassCardRepository passCardRepository, TokenValidator tokenValidator, UserRepository userRepository, VisitRepository visitRepository, FloorRepository floorRepository, DateGenerator dateGenerator, EmailTemplateGen emailTemplateGen, EmailSender emailSender, MobileValidator mobileValidator) {
         this.employeeRepository = employeeRepository;
         this.visitorRepository = visitorRepository;
         this.passCardRepository = passCardRepository;
@@ -51,6 +51,7 @@ public class VisitServiceImpl implements VisitService {
         this.dateGenerator = dateGenerator;
         this.emailTemplateGen = emailTemplateGen;
         this.emailSender = emailSender;
+        this.mobileValidator = mobileValidator;
     }
 
     /**
@@ -87,7 +88,10 @@ public class VisitServiceImpl implements VisitService {
                 } else {
                     System.out.println("H1");
 
-                        visitorEntity = visitorRepository.save(new VisitorEntity(c.getVisitorFirstName(), c.getVisitorLastName(), c.getMobile(), c.getNic(), c.getEmail(), new Date()));
+                    String mobileStandardFormat = mobileValidator.getMobileStandardFormat(c.getMobile());
+                    if(mobileStandardFormat==null) throw new VisitException("Invalid visitor mobile number");
+
+                    visitorEntity = visitorRepository.save(new VisitorEntity(c.getVisitorFirstName(), c.getVisitorLastName(), c.getMobile(), c.getNic(), c.getEmail(), new Date()));
                 }
 
                 Optional<PassCardEntity> passCardById = passCardRepository.findById(c.getPassCardId());
@@ -170,28 +174,40 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public Page<CommonVisitResponseDTO> getHistory(HistorySearchTypes type, String word, Date startDate, Date endDate, int index, int size) {
+    public Page<CommonVisitResponseDTO> getHistory(HistorySearchTypes type, String word, String startDate, String endDate, int index, int size) {
         log.info("Execute getHistory: type: " + type + ", word: " + word +", startDate: " + startDate + ", endDate: " + endDate +", index: " + index + ", size: " + size);
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
 
             Pageable pageable = PageRequest.of(index, size);
 
             Page<VisitEntity> allVisitHistory =  null;
 
-            if(type.equals(HistorySearchTypes.ALL)) {
-                allVisitHistory = visitRepository.getAllVisitHistory(word, startDate, endDate, pageable);
-            }
+            if(startDate.equals("") || startDate==null || endDate.equals("") || endDate==null) {
+                allVisitHistory = visitRepository.getVisitHistory(word, new Date(), pageable);
+            } else {
 
-            if(type.equals(HistorySearchTypes.NOTCHECKOUT)) {
-                allVisitHistory = visitRepository.getAllNotCheckOutVisitHistory(word, startDate, endDate, pageable);
-            }
+                Date sDate = formatter.parse(startDate + " 00:00:00");
+                Date eDate = formatter.parse(endDate + " 23:59:59");
 
-            if(type.equals(HistorySearchTypes.CHECKOUT)) {
-                allVisitHistory = visitRepository.getAllCheckedOutVisitHistory(word, startDate, endDate, pageable);
+                if(type.equals(HistorySearchTypes.ALL)) {
+                    allVisitHistory = visitRepository.getAllVisitHistory(word, sDate, eDate, pageable);
+                }
+
+                if(type.equals(HistorySearchTypes.NOTCHECKOUT)) {
+                    allVisitHistory = visitRepository.getAllNotCheckOutVisitHistory(word, sDate, eDate, pageable);
+                }
+
+                if(type.equals(HistorySearchTypes.CHECKOUT)) {
+                    allVisitHistory = visitRepository.getAllCheckedOutVisitHistory(word, sDate, eDate,  pageable);
+                }
             }
 
             return allVisitHistory.map(this::mapVisitEntityToCommonVisitResponseDTO);
 
+        } catch (ParseException e) {
+            log.error("Execute getHistory: " + e.getMessage());
+            throw new VisitException("Something went wrong");
         } catch (Exception e) {
             log.error("Execute getHistory: " + e.getMessage());
             throw e;

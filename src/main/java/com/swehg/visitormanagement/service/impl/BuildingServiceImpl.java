@@ -37,6 +37,11 @@ public class BuildingServiceImpl implements BuildingService {
         log.info("Execute addBuilding: dto: " + dto);
         try {
 
+            Optional<BuildingEntity> byName = buildingRepository.findByName(dto.getName());
+            if(byName.isPresent() && !byName.get().getBuildingStatus().equals(BuildingStatus.DELETED)) {
+                throw new BuildingException("Another building exist with this name. Please try another building name");
+            }
+
             buildingRepository.save(new BuildingEntity(dto.getName(), BuildingStatus.ACTIVE));
             return true;
 
@@ -55,8 +60,11 @@ public class BuildingServiceImpl implements BuildingService {
             Optional<BuildingEntity> buildingById = buildingRepository.findById(id);
             if(!buildingById.isPresent()) throw new BuildingException("Building not found");
             BuildingEntity buildingEntity = buildingById.get();
-            buildingEntity.setBuildingStatus(BuildingStatus.DELETED);
-            floorRepository.updateFloorStatusByBuilding(FloorStatus.DELETED, buildingEntity.getId());
+            floorRepository.updateFloorStatusByBuilding(FloorStatus.DELETED.toString(), buildingEntity.getId());
+
+            BuildingStatus deleted = BuildingStatus.DELETED;
+
+            buildingEntity.setBuildingStatus(deleted);
             buildingRepository.save(buildingEntity);
             return true;
 
@@ -75,11 +83,19 @@ public class BuildingServiceImpl implements BuildingService {
             Optional<BuildingEntity> buildingById = buildingRepository.findById(dto.getBuildingId());
             if(!buildingById.isPresent()) throw new BuildingException("Building not found");
             BuildingEntity buildingEntity = buildingById.get();
+
+            Optional<BuildingEntity> byName = buildingRepository.findByName(dto.getName());
+            if(byName.isPresent() && byName.get().getId()!=buildingEntity.getId()) {
+                if(!byName.get().getBuildingStatus().equals(BuildingStatus.DELETED)) {
+                    throw new BuildingException("Another building exist with this name. Please try another building name");
+                }
+            }
+
             buildingEntity.setName(dto.getName());
             buildingEntity.setBuildingStatus(dto.getStatus());
 
             if(dto.getStatus().equals(BuildingStatus.INACTIVE)) {
-                floorRepository.updateFloorStatusByBuilding(FloorStatus.INACTIVE, buildingEntity.getId());
+                floorRepository.updateFloorStatusByBuilding(FloorStatus.INACTIVE.toString(), buildingEntity.getId());
             }
 
             buildingRepository.save(buildingEntity);

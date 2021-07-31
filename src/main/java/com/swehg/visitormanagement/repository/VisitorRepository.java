@@ -14,4 +14,5 @@ public interface VisitorRepository extends JpaRepository<VisitorEntity, Long> {
 
     @Query("SELECT v From VisitorEntity v WHERE v.mobile LIKE %:word% AND v.nic LIKE %:word% AND v.firstName LIKE %:word% AND v.lastName LIKE %:word%")
     Page<VisitorEntity> filterVisitor(@Param("word") String word, Pageable pageable);
+
 }
