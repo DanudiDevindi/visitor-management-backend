@@ -1,10 +1,8 @@
 package com.swehg.visitormanagement.service.impl;
 
 import com.swehg.visitormanagement.dto.*;
-import com.swehg.visitormanagement.dto.response.CommonVisitResponseDTO;
 import com.swehg.visitormanagement.dto.response.EmployeeSearchableResponseDTO;
 import com.swehg.visitormanagement.entity.EmployeeEntity;
-import com.swehg.visitormanagement.entity.VisitEntity;
 import com.swehg.visitormanagement.enums.EmployeeStatus;
 import com.swehg.visitormanagement.exception.EmployeeException;
 import com.swehg.visitormanagement.repository.EmployeeRepository;
@@ -24,6 +22,7 @@ import java.util.Optional;
 @Service
 @Log4j2
 public class EmployeeServiceImpl implements EmployeeService {
+
 
     private final EmployeeRepository employeeRepository;
 
@@ -117,14 +116,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<String> getEmployee() {
-        log.info("Execute getEmployee:");
-        List<String> searchableEmployeeList = new ArrayList<>();
+    public List<EmployeeSearchableResponseDTO> getEmployee() {
+        List<EmployeeSearchableResponseDTO> searchableEmployeeList = new ArrayList<>();
         try {
             List<EmployeeEntity> allEmployee = employeeRepository.getAllEmployeeForSearch(EmployeeStatus.ACTIVE);
             for (EmployeeEntity e : allEmployee) {
                 EmployeeSearchableResponseDTO dto = new EmployeeSearchableResponseDTO(e.getId(), e.getFirstName(), e.getLastName(), e.getNic(), e.getEmail(), e.getMobile(), e.getDesignation(), e.getFirstName() + " " + e.getLastName() + " - " + e.getMobile());
-                searchableEmployeeList.add(dto.customToString());
+                searchableEmployeeList.add(dto);
             }
             return searchableEmployeeList;
         } catch (Exception e) {
